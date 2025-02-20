@@ -9,6 +9,10 @@ This is an Angular-based application that allows users to efficiently manage **P
 Project Video:
 
 
+https://github.com/user-attachments/assets/9e924d60-cf9d-42c2-84be-ac1fbc5ebe6b
+
+
+
 
 ## ✨ Features
 
