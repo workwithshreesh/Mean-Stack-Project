@@ -4,6 +4,11 @@
 
 This repository contains multiple **mini-projects** built using the **MEAN stack** (MongoDB, Express.js, Angular, Node.js). Each project showcases different functionalities and real-world use cases, making it an excellent resource for learning and mastering full-stack development.
 
+## 📌 Preview
+https://github.com/user-attachments/assets/ac6a516e-b6e7-43de-8246-c5e1a9fa2387
+
+
+
 ## 🏗️ Tech Stack
 
 - **MongoDB** - NoSQL database for data storage
