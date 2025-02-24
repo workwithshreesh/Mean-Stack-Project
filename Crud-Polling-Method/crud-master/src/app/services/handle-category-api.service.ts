@@ -7,11 +7,11 @@ import { Observable } from 'rxjs';
 })
 export class HandleCategoryApiService {
 
-  private Base_URL = "http://localhost:8000/category/get-all-category"
-  private Edit_URL = "http://localhost:8000/category/edit-category/"
-  private Delete_URL = "http://localhost:8000/category/delete-category/"
-  private Add_URL = "http://localhost:8000/category/post-category"
-  private Truncate_URL = "http://localhost:8000/category/delete-all-data"
+  private Base_URL = "http://localhost:8000/category/categories"
+  private Edit_URL = "http://localhost:8000/category/categories/"
+  private Delete_URL = "http://localhost:8000/category/categories/"
+  private Add_URL = "http://localhost:8000/category/categories/"
+  private Truncate_URL = "http://localhost:8000/category/categories/"
 
   constructor(private http:HttpClient) { }
 

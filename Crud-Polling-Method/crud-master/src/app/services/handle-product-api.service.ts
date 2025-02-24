@@ -7,12 +7,12 @@ import { Observable } from 'rxjs';
 })
 export class HandleProductApiService {
 
-  private BaseCat_URL = "http://localhost:8000/category/get-all-category"
-  private Base_URL = "http://localhost:8000/product/get-all-product"
-  private Edit_URL = "http://localhost:8000/product/edit-product/"
-  private Delete_URL = "http://localhost:8000/product/delete-product/"
-  private Add_URL = "http://localhost:8000/product/post-product"
-  private Truncate_URL = "http://localhost:8000/product/delete-all-product"
+  private BaseCat_URL = "http://localhost:8000/category/categories"
+  private Base_URL = "http://localhost:8000/product/products"
+  private Edit_URL = "http://localhost:8000/product/products/"
+  private Delete_URL = "http://localhost:8000/product/products/"
+  private Add_URL = "http://localhost:8000/product/products/"
+  private Truncate_URL = "http://localhost:8000/product/products/"
 
   constructor(private http:HttpClient) { }
 

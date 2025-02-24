@@ -2,10 +2,10 @@ const express = require("express");
 const { getcategories, InsertCategory, EditCategory, DeleteCategory, TruncateData  } = require("../controller/categoryController")
 const router = express.Router();
 
-router.get("/get-all-category", getcategories)
-router.post("/post-category", InsertCategory)
-router.put("/edit-category/:id", EditCategory)
-router.delete("/delete-category/:id", DeleteCategory)
-router.delete("/delete-all-data",TruncateData)
+router.get("/categories", getcategories);
+router.post("/categories", InsertCategory);
+router.put("/categories/:id", EditCategory);
+router.delete("/categories/:id", DeleteCategory);
+router.delete("/categories", TruncateData);
 
 module.exports = router

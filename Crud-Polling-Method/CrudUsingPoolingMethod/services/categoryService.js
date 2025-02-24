@@ -3,7 +3,7 @@ const categoryModel = require("../models/categoryModel")
 const getTotalcount = async () =>{
     try{
 
-        const total = categoryModel.tostalCategory();
+        const total = await categoryModel.tostalCategory();
         return total;
 
     }catch (err) {
@@ -26,7 +26,7 @@ const getAllCategory = async (page) => {
 const postCategory = async (name) => {
     try {
 
-        const result = categoryModel.postCategory(name)
+        const result = await categoryModel.postCategory(name)
         if (!result) {
             return "Data is in valid"
         }
@@ -42,7 +42,7 @@ const postCategory = async (name) => {
 const putCategory = async (id, name) => {
     try {
 
-        const result = categoryModel.putCategory(id, name);
+        const result = await categoryModel.putCategory(id, name);
         if (!result) {
             return "Data is invalid";
         }
@@ -59,7 +59,7 @@ const putCategory = async (id, name) => {
 const deleteCategory = async (id) => {
     try {
 
-        const result = categoryModel.deleteCategory(id);
+        const result = await categoryModel.deleteCategory(id);
         if (!result) {
             return "Data is invalid";
         }

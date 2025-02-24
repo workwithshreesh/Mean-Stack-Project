@@ -126,7 +126,7 @@ export class ProductlistComponent implements OnInit, OnDestroy{
 
 
   async getProductApiData(page:number){
-    this.AlldataSubscribe = this.apiData.getProductData(page).subscribe(data=>{
+    this.AlldataSubscribe = await this.apiData.getProductData(page).subscribe(data=>{
       console.log(data)
       this.AllData = data;
       this.totalPages = this.AllData?.totalCount;

@@ -116,7 +116,7 @@ export class CategorylistComponent implements OnInit, OnDestroy {
 
 
   async getCategoryApiData(page:number){
-    this.AlldataSubscribe = this.apiData.getCategoryData(page).subscribe(data=>{
+    this.AlldataSubscribe = await this.apiData.getCategoryData(page).subscribe(data=>{
       this.AllData = data;
       this.totalPages = this.AllData?.totalCount;
       this.headers = Object.keys(this.AllData?.categories[0])

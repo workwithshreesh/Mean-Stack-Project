@@ -9,7 +9,7 @@ const ProductsModel = require("../models/productModel")
 const getTotalcount = async () =>{
     try{
 
-        const total = ProductsModel.tostalProduct();
+        const total = await ProductsModel.tostalProduct();
         return total;
 
     }catch (err) {
@@ -19,7 +19,7 @@ const getTotalcount = async () =>{
 
 const getAllProducts = async (page) => {
     try {
-        const rows = ProductsModel.getAllproducts(page);
+        const rows = await ProductsModel.getAllproducts(page);
         return rows;
     } catch (error) {
         console.error("Error fetching Products from DB:", error);
@@ -31,7 +31,7 @@ const getAllProducts = async (page) => {
 const postProducts = async (name,price, category_id) => {
     try {
 
-        const result = ProductsModel.postproducts(name,price, category_id)
+        const result = await ProductsModel.postproducts(name,price, category_id)
         if (!result) {
             return "Data is in valid"
         }
@@ -47,7 +47,7 @@ const postProducts = async (name,price, category_id) => {
 const putProducts = async (id, name,price, category_id) => {
     try {
 
-        const result = ProductsModel.putproducts(id, name, price, category_id);
+        const result = await ProductsModel.putproducts(id, name, price, category_id);
         if (!result) {
             return "Data is invalid";
         }
@@ -64,7 +64,7 @@ const putProducts = async (id, name,price, category_id) => {
 const deleteProducts = async (id) => {
     try {
 
-        const result = ProductsModel.deleteproducts(id);
+        const result = await ProductsModel.deleteproducts(id);
         if (!result) {
             return "Data is invalid";
         }
