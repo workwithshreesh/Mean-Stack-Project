@@ -17,7 +17,6 @@ This is a full-stack e-commerce application built using Flask for the backend an
 - Flask-RESTful for API endpoints
 - SQLAlchemy for database management
 - Flask-CORS for handling cross-origin requests
-- JWT for authentication
 
 ### Frontend (Angular)
 - Angular Framework
