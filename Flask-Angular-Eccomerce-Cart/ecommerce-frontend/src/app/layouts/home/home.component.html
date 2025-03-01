@@ -1,0 +1,36 @@
+<app-header />
+<section class="container mt-5">
+    <h3 class="fw-bold">Featured Categories</h3>
+    <div class="row">
+            <div class="col-md-2 col-6 p-2" *ngFor="let product of allDataProduct">
+                <div class="card shadow-sm">
+                    <img src="{{ Image_Url+(product.image.split('\\').pop().split('/').pop()) }}" class="card-img-top" alt="Dairy">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{product.name}}</h5>
+                        <!-- Add to Cart Button -->
+                        <button class="btn btn-primary w-100 mb-2" (click)="postCartData(product)">Add to Cart</button>
+                        <!-- Buy Now Button -->
+                        <button class="btn btn-success w-100" (click)="buyNow()">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+    </div>
+</section>
+
+<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cartModalLabel">Shopping Cart</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Your cart is empty.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success">Checkout</button>
+            </div>
+        </div>
+    </div>
+</div>
