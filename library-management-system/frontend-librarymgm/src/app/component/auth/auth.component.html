@@ -1,0 +1,56 @@
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow-lg" style="width: 350px;">
+      <h4 class="text-center mb-3">
+        <strong>{{ isRegistering ? 'Registration' : 'Login' }}</strong>
+      </h4>
+  
+      <form [formGroup]="FormsData" (ngSubmit)="onSubmit()">
+        <div *ngIf="isRegistering">
+          <!-- Registration Form Fields -->
+          <div class="mb-3">
+            <label for="username" class="form-label">Username:</label>
+            <input type="text" id="username" class="form-control" formControlName="username" required />
+          </div>
+  
+          <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" id="password" class="form-control" formControlName="password" required />
+          </div>
+  
+          <div class="mb-3">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" id="email" class="form-control" formControlName="email" required />
+          </div>
+  
+          <div class="mb-3">
+            <label for="fullName" class="form-label">Full Name:</label>
+            <input type="text" id="fullName" class="form-control" formControlName="fullName" required />
+          </div>
+        </div>
+  
+        <div *ngIf="!isRegistering">
+          <!-- Login Form Fields -->
+          <div class="mb-3">
+            <label for="username" class="form-label">Username:</label>
+            <input type="text" id="username" class="form-control" formControlName="username" required />
+          </div>
+  
+          <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" id="password" class="form-control" formControlName="password" required />
+          </div>
+        </div>
+  
+        <button type="submit" class="btn btn-primary w-100">
+          {{ isRegistering ? 'Register' : 'Login' }}
+        </button>
+      </form>
+  
+      <div class="text-center mt-3">
+        <a (click)="toggleForm()" class="text-primary">
+          {{ isRegistering ? 'Already have an account? Login here' : 'Don\'t have an account? Register here' }}
+        </a>
+      </div>
+    </div>
+  </div>
+  
