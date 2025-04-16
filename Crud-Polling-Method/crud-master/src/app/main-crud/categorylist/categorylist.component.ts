@@ -84,7 +84,7 @@ export class CategorylistComponent implements OnInit, OnDestroy {
     this.apiData.deleteDataCategory(data.id).subscribe(data=>{
       console.log(data)
     });
-    window.location.reload()
+    
   }
   
 
@@ -97,7 +97,7 @@ export class CategorylistComponent implements OnInit, OnDestroy {
     
     this.modalRefrence.close()
     this.FormsData.reset();
-    window.location.reload()
+    
 
   }
 
@@ -110,13 +110,13 @@ export class CategorylistComponent implements OnInit, OnDestroy {
     this.FormsData.reset()
     this.EditData = false;
     this.editId = null;
-    window.location.reload()
+    
 
   }
 
 
-  async getCategoryApiData(page:number){
-    this.AlldataSubscribe = await this.apiData.getCategoryData(page).subscribe(data=>{
+   getCategoryApiData(page:number){
+    this.AlldataSubscribe =  this.apiData.getCategoryData(page).subscribe(data=>{
       this.AllData = data;
       this.totalPages = this.AllData?.totalCount;
       this.headers = Object.keys(this.AllData?.categories[0])

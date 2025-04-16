@@ -91,42 +91,39 @@ export class ProductlistComponent implements OnInit, OnDestroy{
 
 
   openDelete(data:any){
-    this.apiData.deleteProductData(data.id).subscribe(data=>{
+    this.apiData.deleteProductData(data.id).subscribe((data:any)=>{
       console.log(data)
     });
-    window.location.reload()
   }
   
 
   saveChanges(): void {
     console.log(this.FormsData.value);
     const data = this.FormsData.value
-    this.PostDataSubscribe = this.apiData.postProductData(data).subscribe(data=>{
+    this.PostDataSubscribe = this.apiData.postProductData(data).subscribe((data:any)=>{
       console.log(data)
     });
     
     this.modalRefrence.close()
     this.FormsData.reset();
-    window.location.reload()
 
   }
 
   editChanges(): void {
     const formValue = this.FormsData.value
-    this.PutDataSubscribe = this.apiData.putProductData(this.editId,formValue).subscribe(data=>{
+    this.PutDataSubscribe = this.apiData.putProductData(this.editId,formValue).subscribe((data:any)=>{
       console.log(data);
     });
     this.modalRefrence.close()
     this.FormsData.reset()
     this.EditData = false;
     this.editId = null;
-    window.location.reload()
 
   }
 
 
-  async getProductApiData(page:number){
-    this.AlldataSubscribe = await this.apiData.getProductData(page).subscribe(data=>{
+   getProductApiData(page:number){
+    this.AlldataSubscribe =  this.apiData.getProductData(page).subscribe((data:any)=>{
       console.log(data)
       this.AllData = data;
       this.totalPages = this.AllData?.totalCount;
@@ -137,9 +134,8 @@ export class ProductlistComponent implements OnInit, OnDestroy{
 
 
 
-  async getCategoryApiData(){
-    this.AllCatdataSubscribe = this.apiData.getCategoryData().subscribe(data=>{
-      console.log(data)
+   getCategoryApiData(){
+    this.AllCatdataSubscribe = this.apiData.getCategoryData().subscribe((data:any)=>{
       this.CatData = data
     });
   }
