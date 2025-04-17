@@ -1,1 +1,108 @@
-<p>product-dashboard works!</p>
+<section class="container mt-5">
+    <h3 class="fw-bold">Featured Categories</h3>
+
+    <!-- Loader -->
+    <div *ngIf="isLoading" class="text-center">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Error Handling -->
+    <div *ngIf="hasError" class="text-center">
+        <p class="text-danger">Failed to load products. Please try again.</p>
+        <button class="btn btn-danger" (click)="getAllProduct()">Retry</button>
+    </div>
+
+    <!-- No Data Message -->
+    <div *ngIf="!isLoading && !hasError && allDataProduct?.length === 0" class="text-center">
+        <p class="text-muted">No products available.</p>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="row" *ngIf="!isLoading && !hasError && allDataProduct && allDataProduct.length > 0">
+        <div class="col-lg-2 col-md-3 col-sm-4 col-6 p-2" *ngFor="let product of allDataProduct">
+            <div class="card product-card shadow-sm text-center" (click)="openModal(product)">
+                <img [src]="Base_url + product.Images[0]?.url" class="card-img-top product-img" alt="{{ product.name }}">
+                
+                <div class="card-body p-2">
+                    <h6 class="card-title text-truncate">{{ product.name }}</h6>
+                    <p class="text-success fw-bold mb-1">₹{{ product.price }}</p>
+                    
+                    <button class="btn btn-sm btn-outline-primary w-100 mb-1" (click)="addToCart(product.name)">Add to Cart</button>
+                    <button type="button" class="btn btn-sm btn-primary w-100" data-bs-toggle="modal" data-bs-target="#productModal">
+                        Show Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+      <!-- Pagination Controls -->
+  <div *ngIf="totalPages > 1" class="d-flex justify-content-center mt-4">
+    <button
+      class="btn btn-outline-primary me-2"
+      (click)="goToPage(currentPage - 1)"
+      [disabled]="currentPage === 1"
+    >
+      Previous
+    </button>
+    <span class="mx-2">
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+    <button
+      class="btn btn-outline-primary ms-2"
+      (click)="goToPage(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+    >
+      Next
+    </button>
+  </div>
+</section>
+
+<!-- Modal -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">{{ selectedProduct?.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Image Slider -->
+                    <div class="col-md-5 text-center">
+                        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <div *ngFor="let image of selectedProduct?.Images; let i = index" 
+                                     class="carousel-item" [class.active]="i === 0">
+                                    <img [src]="Base_url + image.url" class="d-block w-100 img-thumbnail rounded" 
+                                         alt="{{ selectedProduct?.name }}">
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon bg-primary" aria-hidden="true"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                                <span class="carousel-control-next-icon bg-primary" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="col-md-7">
+                        <ul class="list-group">
+                            <li class="list-group-item"><strong>SKU:</strong> {{ selectedProduct?.sku }}</li>
+                            <li class="list-group-item"><strong>Name:</strong> {{ selectedProduct?.name }}</li>
+                            <li class="list-group-item"><strong>Price:</strong> ₹{{ selectedProduct?.price }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

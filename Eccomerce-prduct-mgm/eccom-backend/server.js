@@ -4,12 +4,19 @@ const { sequelize } = require('./models');
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const path = require('path');
+const cors = require("cors");
 
 const app = express();
-app.use(bodyParser.json());
+
+// Allow origin
+app.use(cors())
+
+//  Parse JSON for regular APIs
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Serve static images
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);

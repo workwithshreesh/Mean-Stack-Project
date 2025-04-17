@@ -19,8 +19,30 @@ exports.createCategory = async (req, res) => {
 //  Get All Categories
 exports.getAllCategories = async (req, res) => {
   try {
-    const categories = await Category.findAll();
-    res.json(categories);
+    const { page = 1, limit = 10 } = req.query;  // Get page and limit from the query parameters, default to page 1 and limit 10
+    // Convert to integers
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+
+    // Calculate the offset for pagination
+    const offset = (pageNumber - 1) * limitNumber;
+
+
+    const { count, rows } = await Category.findAndCountAll({
+      limit: limitNumber,
+      offset: offset
+    });
+
+    // Calculate the total pages
+    const totalPages = Math.ceil(count / limitNumber);
+
+    // Send the response with products, current page, and total pages
+    res.json({
+      category: rows,
+      currentPage: pageNumber,
+      totalPages: totalPages,
+      totalCount: count
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

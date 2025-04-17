@@ -1,1 +1,78 @@
-<p>category works!</p>
+<div class="container mt-4">
+    <h3 class="mb-3">Category Management</h3>
+  
+    <button class="btn btn-primary mb-3" (click)="openModal()">➕ Add Category</button>
+  
+    <table class="table table-striped table-bordered" *ngIf="categories.length">
+      <thead class="table-light">
+        <tr>
+          <th>Sr.</th>
+          <th>ID</th>
+          <th>Name</th>
+          <th style="width: 160px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let category of categories; let i = index">
+          <td>{{i+1}}</td>
+          <td>{{ category.id }}</td>
+          <td>{{ category.name }}</td>
+          <td>
+            <button class="btn btn-warning btn-sm me-2" (click)="openModal(category)">Edit</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteCategory(category.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <div *ngIf="!categories.length && !isLoading" class="text-muted text-center">No categories found.</div>
+  
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="categoryModalLabel">{{ modalTitle }}</h5>
+            <button type="button" class="btn-close" (click)="closeModal()"></button>
+          </div>
+          <div class="modal-body">
+            <label for="categoryName" class="form-label">Category Name</label>
+            <input
+              type="text"
+              id="categoryName"
+              [(ngModel)]="modalCategoryName"
+              class="form-control"
+              [disabled]="isSaving"
+            />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()" [disabled]="isSaving">Cancel</button>
+            <button type="button" class="btn btn-success" (click)="saveCategory()" [disabled]="isSaving">
+              {{ editingCategoryId ? 'Update' : 'Save' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+       <!-- Pagination Controls -->
+  <div *ngIf="totalPages > 1" class="d-flex justify-content-center mt-4">
+    <button
+      class="btn btn-outline-primary me-2"
+      (click)="goToPage(currentPage - 1)"
+      [disabled]="currentPage === 1"
+    >
+      Previous
+    </button>
+    <span class="mx-2">
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+    <button
+      class="btn btn-outline-primary ms-2"
+      (click)="goToPage(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+    >
+      Next
+    </button>
+  </div>
+  </div>
+  

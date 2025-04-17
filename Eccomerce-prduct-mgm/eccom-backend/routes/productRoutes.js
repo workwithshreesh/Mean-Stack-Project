@@ -9,7 +9,7 @@ router.post('/upload', upload.array('images', 5), productController.createProduc
 // Other product routes
 router.get('/', productController.getAllProducts);
 router.get('/:id', productController.getProductById);
-router.put('/:id', productController.updateProduct);
+router.put('/:id', upload.array('images', 5) , productController.updateProduct);
 router.delete('/:id', productController.deleteProduct);
 
 module.exports = router;

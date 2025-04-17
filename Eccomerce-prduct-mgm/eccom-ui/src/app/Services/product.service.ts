@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/envirnoments';
 import { catchError, Observable, throwError } from 'rxjs';
@@ -13,9 +13,14 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-  // GET all products
-  getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.Base_URL).pipe(
+
+  // pagination
+  getProducts(page: number, limit: number): Observable<Product[]> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<Product[]>(this.Base_URL, { params }).pipe(
       catchError(this.handleError)
     );
   }
@@ -29,7 +34,7 @@ export class ProductService {
 
   // POST create a new product
   createProduct(product: any): Observable<any> {
-    return this.http.post<any>(this.Base_URL+"upload", product).pipe(
+    return this.http.post<any>(this.Base_URL+"/upload", product).pipe(
       catchError(this.handleError)
     );
   }
