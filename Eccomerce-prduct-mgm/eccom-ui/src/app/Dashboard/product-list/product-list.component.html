@@ -1,26 +1,54 @@
-<ng-container *ngIf="allProducts$ | async as products">
-    <!-- No Products Available -->
-    <div class="container mt-5 text-center" *ngIf="totalCount === 0 && !errorMessage and !totalCount">
-      <h2 class="fw-bold text-muted">No Products Available</h2>
-      <p class="fst-italic text-secondary">
-        "Great things start with a single step. Add your first product!"
-      </p>
-      <a class="btn btn-primary shadow-lg mt-3 px-4 py-2" routerLink="/add-product">
-        ➕ Add New Product
-      </a>
+<ng-container>
+
+
+  <div class="d-flex justify-content-center mt-3 mb-4 position-relative">
+    <div class="w-50 position-relative">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="🔍 Search category..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange($event)"
+      />
+  
+      <ul *ngIf="suggestions.length" class="list-group position-absolute z-3 shadow w-100">
+        <li
+          *ngFor="let suggestion of suggestions"
+          class="list-group-item list-group-item-action"
+          (click)="onSuggestionSelect(suggestion)"
+        >
+          {{ suggestion }}
+        </li>
+      </ul>
     </div>
+  </div>
+  
+ 
+
+   <!-- No Products Available -->
+<div class="container mt-5 text-center" *ngIf="allProducts.length === 0 && !errorMessage">
+  <h2 class="fw-bold text-muted">No Products Available</h2>
+  <p class="fst-italic text-secondary">
+    "Great things start with a single step. Add your first product!"
+  </p>
+  <a class="btn btn-primary shadow-lg mt-3 px-4 py-2" routerLink="/add-product">
+    ➕ Add New Product
+  </a>
+</div>
+   
   
     <!-- Product List -->
-    <div *ngIf="products.length > 0 && !errorMessage">
+    <div *ngIf="allProducts.length > 0 && !errorMessage">
       <h2 class="fw-bold">Manage Products</h2>
       <button class="btn btn-primary mb-3 shadow-lg" (click)="addNew()">
         ➕ Add New Product
       </button>
+      
   
       <div class="row g-3">
         <div
           class="col-lg-2 col-md-3 col-sm-4 col-6 p-2"
-          *ngFor="let product of products"
+          *ngFor="let product of allProducts"
         >
           <div class="card product-card animate__animated animate__fadeInUp">
             <!-- Product Image -->

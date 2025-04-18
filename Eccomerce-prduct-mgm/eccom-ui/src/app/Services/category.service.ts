@@ -21,11 +21,22 @@ export class CategoryService {
       );
     }
 
+
+    // GET all suggestions
+    getSuggestions(searchSuggestions:string): Observable<any>{
+      const params = new HttpParams()
+                .set('search', searchSuggestions.toString());
+      return this.http.get(this.Base_URL+'/suggestion', { params }).pipe(
+        catchError(this.handleError)
+      );
+    }
+
     // GET all Categorys Pagination
-    getCategorys(page: number, limit: number): Observable<Category[]> {
+    getCategorys(page: number, limit: number, search: string): Observable<Category[]> {
       const params = new HttpParams()
             .set('page', page.toString())
-            .set('limit', limit.toString());
+            .set('limit', limit.toString())
+            .set('search',search.toString());
       
           return this.http.get<Category[]>(this.Base_URL, { params }).pipe(
             catchError(this.handleError)

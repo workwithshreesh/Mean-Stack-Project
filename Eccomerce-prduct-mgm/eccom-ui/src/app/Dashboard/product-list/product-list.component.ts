@@ -1,20 +1,22 @@
 import { Component } from '@angular/core';
-import { Observable, of } from 'rxjs';
 import { environment } from '../../../environments/envirnoments';
 import { ProductService } from '../../Services/product.service';
 import { ProductDataService } from '../../Services/product-data.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-
+import { FormsModule } from '@angular/forms';
+import { Product } from '../../Interface/Product.interface';
+ 
 @Component({
   selector: 'app-product-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css'
 })
 export class ProductListComponent {
-  allProducts$!: Observable<any[]>;  
+  allProducts: any[] = [];  
+  filteredCategories: Product[] = [];
   baseUrl: string = environment.baseUrl + "/uploads/";
   totalCount!:number;
   isLoading: boolean = false;
@@ -24,6 +26,10 @@ export class ProductListComponent {
   currentPage: number = 1;
   totalPages: number = 1;
   limit: number = 10;
+
+  // Search
+  searchTerm = '';
+  suggestions:string[] = [];
 
   constructor(
     private productService: ProductService,
@@ -39,11 +45,13 @@ export class ProductListComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.productService.getProducts(this.currentPage, this.limit).subscribe({
+    this.productService.getProducts(this.currentPage, this.limit, this.searchTerm).subscribe({
       next: (response: any) => {
-        this.allProducts$ = of(response.products); 
+        this.allProducts = response.products; 
         this.totalCount = response.totalCount;
         this.totalPages = response.totalPages;
+        console.log("pages",this.totalPages)
+        this.filteredCategories = [...this.allProducts];
         this.isLoading = false;
       },
       error: (err) => {
@@ -85,6 +93,44 @@ export class ProductListComponent {
         }
       });
     }
+  }
+
+
+  // On search changes
+  onSearchChange(value:string): void{
+    this.currentPage = 1;
+    this.fetchProducts();
+
+    if(value.trim()){
+      this.productService.getSuggestions(value).subscribe({
+        next: (res:any) => {
+          console.log(res)
+          this.suggestions = res.map((prod:any)=>prod.name);
+        },
+        error: (err) => {
+          console.error("Suggestions error", err);
+          this.suggestions = [];
+        }
+      })
+    }else{
+      this.suggestions = [];
+    }
+
+  }
+
+
+  onSuggestionSelect(suggestion: string){
+    this.searchTerm = suggestion;
+    this.suggestions = [];
+    this.currentPage = 1;
+    this.fetchProducts();
+  }
+
+  onSearchFillter(searchValue: string){
+    this.searchTerm = searchValue.toLowerCase();
+    this.filteredCategories = this.allProducts.filter(category => 
+      category.name.toLowerCase().includes(this.searchTerm)
+    );
   }
 
   ngOnDestroy(): void {}

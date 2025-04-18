@@ -4,6 +4,7 @@ const controller = require('../controller/category-controller');
 
 // CRUD routes
 router.post('/', controller.createCategory);
+router.get('/suggestion/',controller.getSuggestions);
 router.get('/', controller.getAllCategories);
 router.get('/:id', controller.getCategoryById);
 router.put('/:id', controller.updateCategory);

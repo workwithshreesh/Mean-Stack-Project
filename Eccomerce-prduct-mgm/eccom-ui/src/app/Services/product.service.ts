@@ -15,15 +15,28 @@ export class ProductService {
 
 
   // pagination
-  getProducts(page: number, limit: number): Observable<Product[]> {
+  getProducts(page: number, limit: number, search: string): Observable<Product[]> {
     const params = new HttpParams()
       .set('page', page.toString())
-      .set('limit', limit.toString());
+      .set('limit', limit.toString())
+      .set('search',search.toString());
 
     return this.http.get<Product[]>(this.Base_URL, { params }).pipe(
       catchError(this.handleError)
     );
   }
+
+
+  // suggestions
+  getSuggestions(searchSuggestions:string):Observable<any>{
+    const params = new HttpParams()
+      .set('search', searchSuggestions.toString());
+
+    return this.http.get<any>(this.Base_URL+'/suggestion', { params }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
 
   // GET product by ID
   getProductById(id: number): Observable<Product> {

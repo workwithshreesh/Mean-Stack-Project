@@ -1,6 +1,35 @@
 const { Category } = require('../models');
+const { Op } = require("sequelize");
 
-// ➕ Create Category
+
+// Search Suggestions api
+exports.getSuggestions = async (req, res) => {
+  try {
+    const search = req.query.search;
+
+    if (!search || !search.trim()) return res.status(200).json([]);
+    
+
+    const suggestion = await Category.findAll({
+      where: {
+        name: {
+          [Op.iLike]: `${search}%`  // Case-insensitive search for PostgreSQL
+        }
+      },
+      attributes: ['id', 'name'],
+      limit: 5
+    });
+
+    return res.status(200).json(suggestion);
+  } catch (error) {
+    console.error("Error in getSuggestions:", error);
+    return res.status(500).json({ error: "An error occurred while fetching suggestions." });
+  }
+};
+
+
+
+// Create Category
 exports.createCategory = async (req, res) => {
   try {
     const { name } = req.body;
@@ -16,19 +45,31 @@ exports.createCategory = async (req, res) => {
   }
 };
 
+
+
+
 //  Get All Categories
 exports.getAllCategories = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;  // Get page and limit from the query parameters, default to page 1 and limit 10
+    const { page = 1, limit = 10, search = '' } = req.query;  // get page limit and and currentpage and search in query parameter
     // Convert to integers
     const pageNumber = parseInt(page);
     const limitNumber = parseInt(limit);
+
+    // Search query parameter
+    const whereClause = search ? 
+    {
+      name: {
+        [Op.iLike]: `%${search}%`  
+      }
+    } : {}
 
     // Calculate the offset for pagination
     const offset = (pageNumber - 1) * limitNumber;
 
 
     const { count, rows } = await Category.findAndCountAll({
+      where: whereClause,
       limit: limitNumber,
       offset: offset
     });
@@ -48,6 +89,8 @@ exports.getAllCategories = async (req, res) => {
   }
 };
 
+
+
 //  Get Single Category
 exports.getCategoryById = async (req, res) => {
   try {
@@ -58,6 +101,8 @@ exports.getCategoryById = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
 
 //  Update Category
 exports.updateCategory = async (req, res) => {
@@ -75,6 +120,8 @@ exports.updateCategory = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
 
 //  Delete Category
 exports.deleteCategory = async (req, res) => {

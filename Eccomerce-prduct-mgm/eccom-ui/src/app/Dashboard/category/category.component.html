@@ -2,7 +2,30 @@
     <h3 class="mb-3">Category Management</h3>
   
     <button class="btn btn-primary mb-3" (click)="openModal()">➕ Add Category</button>
-  
+
+    <div class="d-flex justify-content-center mt-3 mb-4 position-relative">
+      <div class="w-50 position-relative">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="🔍 Search category..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+        />
+    
+        <ul *ngIf="suggestions.length" class="list-group position-absolute z-3 shadow w-100">
+          <li
+            *ngFor="let suggestion of suggestions"
+            class="list-group-item list-group-item-action"
+            (click)="onSuggestionSelect(suggestion)"
+          >
+            {{ suggestion }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    
     <table class="table table-striped table-bordered" *ngIf="categories.length">
       <thead class="table-light">
         <tr>
@@ -25,8 +48,10 @@
       </tbody>
     </table>
   
-    <div *ngIf="!categories.length && !isLoading" class="text-muted text-center">No categories found.</div>
-  
+    <div *ngIf="!categories.length && !isLoading" class="text-center text-muted fs-5 py-4 border rounded">
+      No categories found.
+    </div>
+      
     <!-- Bootstrap Modal -->
     <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
       <div class="modal-dialog">

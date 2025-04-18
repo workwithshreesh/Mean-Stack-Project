@@ -23,6 +23,7 @@ export class ProductDashboardComponent {
   currentPage: number = 1;
   totalPages: number = 1;
   limit: number = 10;
+  searchTerm:string = '';
 
 
   constructor(private productService: ProductService) {}
@@ -41,7 +42,7 @@ export class ProductDashboardComponent {
     this.isLoading = true;
     this.hasError = false;
 
-    this.productService.getProducts(this.currentPage, this.limit).subscribe({
+    this.productService.getProducts(this.currentPage, this.limit, this.searchTerm).subscribe({
       next: (response: any) => {
             this.isLoading = false;
             this.allDataProduct = response.products; 

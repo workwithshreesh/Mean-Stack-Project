@@ -13,6 +13,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 })
 export class CategoryComponent {
   categories: Category[] = [];
+  filteredCategories: Category[] = [];
   isLoading = false;
   errorMessage = '';
 
@@ -29,6 +30,11 @@ export class CategoryComponent {
    totalCount!:number;
 
 
+  //  Search
+  searchTerm: string = '';
+  suggestions: string[] = [];
+
+
   constructor(private categoryService: CategoryService) {}
 
   ngOnInit(): void {
@@ -37,9 +43,10 @@ export class CategoryComponent {
 
   loadCategories(): void {
     this.isLoading = true;
-    this.categoryService.getCategorys(this.currentPage, this.limit).subscribe({
+    this.categoryService.getCategorys(this.currentPage, this.limit, this.searchTerm).subscribe({
       next: (data:any) => {
         this.categories = data.category;
+        this.filteredCategories = [...this.categories];
         this.totalPages = data.totalPages;
         this.totalCount = data.totalCount;
         this.isLoading = false;
@@ -113,5 +120,47 @@ export class CategoryComponent {
     const modal = (window as any).bootstrap.Modal.getInstance(document.getElementById('categoryModal'));
     modal.hide();
   }
+
+  onSearchChange(value:string): void {
+    this.currentPage = 1; // har search pe page 1 se shuru kar
+    this.loadCategories(); // backend call karega
+
+    // Search suggestion
+    if(value.trim()){
+      this.categoryService.getSuggestions(value).subscribe({
+        next: (res:any) => {
+          console.log(res)
+          this.suggestions = res.map((cat:any)=>cat.name);
+        },
+        error: (err) => {
+          console.error("Suggestions error",err);
+          this.suggestions = [];
+        }
+      });
+    } else{
+      this.suggestions = [];
+    }
+
+  }
+
+  onSuggestionSelect(suggestion: string) {
+    this.searchTerm = suggestion;
+    this.suggestions = [];
+    this.currentPage = 1;
+    this.loadCategories();  // Server-side search load
+  }
+  
+  
+
+
+  onSearchFilter(searchValue: string): void {
+    console.log(searchValue)
+    this.searchTerm = searchValue.toLowerCase();
+    this.filteredCategories = this.categories.filter(category =>
+      category.name.toLowerCase().includes(this.searchTerm)
+    );
+  }
+  
+  
 
 }

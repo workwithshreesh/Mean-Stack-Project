@@ -1,7 +1,38 @@
 const { Product, Category, Image } = require('../models');
+const { Op } = require("sequelize");
+const fs = require("fs");
 const path = require('path');
-const fs = require('fs');
 
+
+// Suggestion
+exports.getSuggestions = async (req, res) => {
+  try {
+
+    const search = req.query.search
+
+    if(!search && !search.trim()) return res.status(200).json([]);
+
+    const suggestion = await Product.findAll({
+      where: {
+        name: {
+          [Op.iLike]: `${search}%`  // Case-insensitive search for PostgreSQL
+        }
+      },
+      attributes: ['id', 'name'],
+      limit: 5
+    });
+
+    return res.status(200).json(suggestion);
+    
+  } catch (error) {
+    console.error("Error in getSuggestions:", error);
+    return res.status(500).json({ error: "An error occurred while fetching suggestions." });
+  }
+}
+
+
+
+// create new product
 exports.createProductWithFiles = async (req, res) => {
   try {
     const { name, price, categoryId } = req.body;
@@ -38,10 +69,16 @@ exports.createProductWithFiles = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
 // Get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;  // Get page and limit from the query parameters, default to page 1 and limit 10
+    const { page = 1, limit = 10, search = '' } = req.query;  // Get page and limit from the query parameters, default to page 1 and limit 10
     
     // Convert to integers
     const pageNumber = parseInt(page);
@@ -50,8 +87,16 @@ exports.getAllProducts = async (req, res) => {
     // Calculate the offset for pagination
     const offset = (pageNumber - 1) * limitNumber;
 
+    // search the query using where clause
+    const whereClause = search ? {
+      name: {
+        [Op.iLike]: `%${search}%`
+      }
+    } : {};
+
     // Fetch products with pagination and ordering by price
     const { count, rows } = await Product.findAndCountAll({
+      where: whereClause,
       include: [Category, Image],
       order: [['price', 'ASC']],  // or 'DESC' for descending
       limit: limitNumber,
@@ -59,7 +104,7 @@ exports.getAllProducts = async (req, res) => {
     });
 
     // Calculate the total pages
-    const totalPages = Math.ceil(count / limitNumber);
+    const totalPages = Math.floor(count / limitNumber);
 
     // Send the response with products, current page, and total pages
     res.json({
@@ -75,6 +120,8 @@ exports.getAllProducts = async (req, res) => {
 };
 
 
+
+
 // Get single product
 exports.getProductById = async (req, res) => {
   try {
@@ -87,6 +134,10 @@ exports.getProductById = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+
+
 
 // Update product
 exports.updateProduct = async (req, res) => {
@@ -151,6 +202,10 @@ exports.updateProduct = async (req, res) => {
     res.status(500).json({ message: "Error updating product", error: error.message });
   }
 };
+
+
+
+
 
 // Delete product
 exports.deleteProduct = async (req, res) => {
