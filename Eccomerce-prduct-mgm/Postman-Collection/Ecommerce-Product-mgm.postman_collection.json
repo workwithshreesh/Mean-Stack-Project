@@ -173,6 +173,14 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "SearchSuggestions",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
 		}
 	]
 }
