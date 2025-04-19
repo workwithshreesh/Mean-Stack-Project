@@ -1,0 +1,80 @@
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow-lg" style="width: 350px;">
+      <h4 class="text-center mb-3"><strong>Login</strong></h4>
+  
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="alert alert-danger text-center">
+        {{ errorMessage }}
+      </div>
+  
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Email Field -->
+        <div class="mb-3">
+          <label for="email" class="form-label">Email:</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            formControlName="email"
+          />
+          <small
+            *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+            class="text-danger"
+          >
+            Valid email is required.
+          </small>
+        </div>
+  
+        <!-- Password Field -->
+        <div class="mb-3">
+          <label for="password" class="form-label">Password:</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            formControlName="password"
+          />
+          <small
+            *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            class="text-danger"
+          >
+            Password is required.
+          </small>
+        </div>
+  
+        <!-- Role Dropdown -->
+        <div class="mb-3">
+          <label for="role" class="form-label">Role:</label>
+          <select
+            id="role"
+            class="form-select"
+            formControlName="role"
+          >
+            <option value="">-- Select Role --</option>
+            <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+          </select>
+          <small
+            *ngIf="loginForm.get('role')?.invalid && loginForm.get('role')?.touched"
+            class="text-danger"
+          >
+            Role is required.
+          </small>
+        </div>
+  
+        <button
+          type="submit"
+          class="btn btn-primary w-100"
+          [disabled]="loginForm.invalid"
+        >
+          Login
+        </button>
+      </form>
+  
+      <div class="text-center mt-3">
+        <a routerLink="/authentication/register" class="text-primary">
+          Don’t have an account? Register here
+        </a>
+      </div>
+    </div>
+  </div>
+  

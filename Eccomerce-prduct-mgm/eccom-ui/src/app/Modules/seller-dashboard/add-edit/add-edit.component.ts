@@ -1,19 +1,16 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ProductDataService } from '../../Services/product-data.service';
-import { ProductService } from '../../Services/product.service';
-import { environment } from '../../../environments/envirnoments';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ProductDataService } from '../../../Services/product-data.service';
+import { ProductService } from '../../../Services/product.service';
+import { environment } from '../../../../environments/envirnoments';
 import { Subscription } from 'rxjs';
-import { CommonModule } from '@angular/common';
-import { CategoryService } from '../../Services/category.service';
-import { Category } from '../../Interface/Category.interface';
+import { CategoryService } from '../../../Services/category.service';
+import { Category } from '../../../Interface/Category.interface';
 import { Router } from '@angular/router';
 
 
 @Component({
   selector: 'app-add-edit',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './add-edit.component.html',
   styleUrl: './add-edit.component.css'
 })

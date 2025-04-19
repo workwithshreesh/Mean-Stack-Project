@@ -1,13 +1,10 @@
 import { Component } from '@angular/core';
-import { ProductService } from '../../Services/product.service';
-import { environment } from '../../../environments/envirnoments';
+import { ProductService } from '../../../Services/product.service';
+import { environment } from '../../../../environments/envirnoments';
 import { Subscription } from 'rxjs';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-product-dashboard',
-  standalone: true,
-  imports: [CommonModule],
   templateUrl: './product-dashboard.component.html',
   styleUrl: './product-dashboard.component.css'
 })

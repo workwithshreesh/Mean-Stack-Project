@@ -1,8 +1,8 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const { sequelize } = require('./models');
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
+const authRoute = require("./routes/userRoute");
 const path = require('path');
 const cors = require("cors");
 
@@ -20,6 +20,8 @@ app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use("/api/auth", authRoute);
+
 
 sequelize.sync({ alter: true }).then(() => {
   console.log('DB Synced');

@@ -1,13 +1,9 @@
 import { Component } from '@angular/core';
-import { Category } from '../../Interface/Category.interface';
-import { CategoryService } from '../../Services/category.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Category } from '../../../Interface/Category.interface';
+import { CategoryService } from '../../../Services/category.service';
 
 @Component({
   selector: 'app-category',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './category.component.html',
   styleUrl: './category.component.css'
 })

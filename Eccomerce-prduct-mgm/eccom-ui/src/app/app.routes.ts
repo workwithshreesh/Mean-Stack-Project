@@ -1,28 +1,22 @@
 import { Routes } from '@angular/router';
-import { ProductDashboardComponent } from './Dashboard/product-dashboard/product-dashboard.component';
-import { ProductListComponent } from './Dashboard/product-list/product-list.component';
-import { AddEditComponent } from './Dashboard/add-edit/add-edit.component';
-import { CategoryComponent } from './Dashboard/category/category.component';
+
 
 export const routes: Routes = [
     {
+        path:"seller-dashboard",
+        loadChildren: () => 
+            import('./Modules/seller-dashboard/seller-dashboard.module').then(m=>m.SellerDashboardModule)
+    },
+    {
+        path:"authentication",
+        loadChildren: () =>
+            import('./Modules/Authentication/authentication.module').then(m=>m.AuthenticationModule)
+    },
+    {
         path:"",
-        component:ProductDashboardComponent
-      },
-      {
-        path:"product",
-        component:ProductListComponent
-      },
-      {
-        path:"add-product",
-        component:AddEditComponent
-      },
-      {
-        path:"edit-product",
-        component:AddEditComponent
-      },
-      {
-        path:"category",
-        component:CategoryComponent
-      }
+        loadChildren: () => 
+            import(`./Modules/user-dashboard/user-dashboard.module`).then(m=>m.UserDashboardModule)
+    },
+     // Add a fallback route
+  { path: '**', redirectTo: '' }
 ];

@@ -1,16 +1,12 @@
 import { Component } from '@angular/core';
-import { environment } from '../../../environments/envirnoments';
-import { ProductService } from '../../Services/product.service';
-import { ProductDataService } from '../../Services/product-data.service';
+import { environment } from '../../../../environments/envirnoments';
+import { ProductService } from '../../../Services/product.service';
+import { ProductDataService } from '../../../Services/product-data.service';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Product } from '../../Interface/Product.interface';
+import { Product } from '../../../Interface/Product.interface';
  
 @Component({
   selector: 'app-product-list',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.css'
 })
