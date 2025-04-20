@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm p-3" *ngIf="!isCart">
+    <div class="container" >
+        <a class="navbar-brand fw-bold text-success" routerLink="/">FreshCart</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <form class="d-flex w-50 mx-auto">
+                <input class="form-control me-2" type="search" placeholder="Search for products..." aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" routerLink="/">Home</a></li>
+                <li class="nav-item"><a class="nav-link" routerLink="/">Shop</a></li>
+                <li class="nav-item"><a class="nav-link" routerLink="/">Stores</a></li>
+                <li class="nav-item"><a class="nav-link" routerLink="/product">Products</a></li>
+                <li class="nav-item"><a class="btn btn-success">Location</a></li>
+                <li class="nav-item">
+                    <a class="btn btn-outline-success position-relative ms-2" routerLink="/cart">
+                        Cart 
+                    </a>
+                    
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<nav class="navbar navbar-light bg-light p-3" *ngIf="isCart">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-success" routerLink="/">FreshCart</a>
+        <a href="shop.html" class="btn btn-outline-success" routerLink="/">Back to Shop</a>
+    </div>
+</nav>
+
+
+<!--- <span class="badge bg-success position-absolute top-0 start-100 translate-middle">0</span> 
+
+                    <a class="btn btn-outline-success position-relative ms-2" data-bs-toggle="modal" data-bs-target="#cartModal" routerLink="/cart">
+-->

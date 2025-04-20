@@ -1,0 +1,119 @@
+<ng-container>
+
+
+  <div class="d-flex justify-content-center mt-3 mb-4 position-relative">
+    <div class="w-50 position-relative">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="🔍 Search category..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange($event)"
+      />
+  
+      <ul *ngIf="suggestions.length" class="list-group position-absolute z-3 shadow w-100">
+        <li
+          *ngFor="let suggestion of suggestions"
+          class="list-group-item list-group-item-action"
+          (click)="onSuggestionSelect(suggestion)"
+        >
+          {{ suggestion }}
+        </li>
+      </ul>
+    </div>
+  </div>
+  
+ 
+
+   <!-- No Products Available -->
+<div class="container mt-5 text-center" *ngIf="allProducts.length === 0 && !errorMessage">
+  <h2 class="fw-bold text-muted">No Products Available</h2>
+  <p class="fst-italic text-secondary">
+    "Great things start with a single step. Add your first product!"
+  </p>
+  <a class="btn btn-primary shadow-lg mt-3 px-4 py-2" routerLink="/seller-dashboard/add-product">
+    ➕ Add New Product
+  </a>
+</div>
+   
+  
+    <!-- Product List -->
+    <div *ngIf="allProducts.length > 0 && !errorMessage">
+      <h2 class="fw-bold">Manage Products</h2>
+      <button class="btn btn-primary mb-3 shadow-lg" (click)="addNew()">
+        ➕ Add New Product
+      </button>
+      
+  
+      <div class="row g-3">
+        <div
+          class="col-lg-2 col-md-3 col-sm-4 col-6 p-2"
+          *ngFor="let product of allProducts"
+        >
+          <div class="card product-card animate__animated animate__fadeInUp">
+            <!-- Product Image -->
+            <img
+              *ngIf="product.Images.length > 0; else noImageTemplate"
+              [src]="baseUrl + (product.Images[0].url || 'default-image.png')"
+              class="card-img-top product-img"
+              alt="Product image"
+              (error)="handleImageError($event)"
+            />
+  
+            <ng-template #noImageTemplate>
+              <img
+                src="assets/default-image.png"
+                class="card-img-top product-img"
+                alt="No Image Available"
+              />
+            </ng-template>
+  
+            <div class="card-body">
+              <h5 class="card-title">{{ product.name || 'Unnamed Product' }}</h5>
+              <p class="text-muted">₹{{ product.price || 'N/A' }}</p>
+  
+              <div class="d-flex justify-content-between">
+                <button
+                  class="btn btn-warning btn-sm"
+                  (click)="onEditClick(product)"
+                >
+                  ✏️
+                </button>
+                <button
+                  class="btn btn-danger btn-sm"
+                  (click)="onDeleteClick(product)"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <!-- Pagination Controls -->
+  <div *ngIf="totalPages > 1" class="d-flex justify-content-center mt-4">
+    <button
+      class="btn btn-outline-primary me-2"
+      (click)="goToPage(currentPage - 1)"
+      [disabled]="currentPage === 1"
+    >
+      Previous
+    </button>
+    <span class="mx-2">
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+    <button
+      class="btn btn-outline-primary ms-2"
+      (click)="goToPage(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+    >
+      Next
+    </button>
+  </div>
+  </ng-container>
+  
+

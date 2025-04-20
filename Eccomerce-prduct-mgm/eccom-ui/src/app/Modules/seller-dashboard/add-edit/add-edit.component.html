@@ -1,0 +1,91 @@
+<div class="container-fluid d-flex justify-content-center align-items-center vh-100 overflow-auto">
+  <div class="card shadow-lg p-4" style="width: 55rem; max-height: 90vh; overflow-y: auto;">
+    <h2 class="text-center text-primary fw-bold mb-4">
+      {{ productId ? 'Edit Product' : 'Add Product' }}
+    </h2>
+
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+      <div class="row g-3">
+        <!-- Name -->
+        <div class="col-md-6">
+          <label for="name" class="form-label fw-semibold">Name</label>
+          <input
+            type="text"
+            id="name"
+            class="form-control"
+            formControlName="name"
+            placeholder="Enter Product Name"
+            required
+          />
+          <div *ngIf="productForm.get('name')?.invalid && productForm.get('name')?.touched" class="text-danger">
+            Name is required.
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div class="col-md-6">
+          <label for="price" class="form-label fw-semibold">Price</label>
+          <input
+            type="number"
+            id="price"
+            class="form-control"
+            formControlName="price"
+            placeholder="Enter Price"
+            required
+          />
+          <div *ngIf="productForm.get('price')?.invalid && productForm.get('price')?.touched" class="text-danger">
+            Price must be greater than 0.
+          </div>
+        </div>
+
+        <!-- Category -->
+        <div class="col-md-6">
+          <label for="category" class="form-label fw-semibold">Select Category</label>
+          <select class="form-select" id="category" formControlName="categoryId">
+            <option [value]="''" disabled>Select Category</option>
+            <option *ngFor="let data of categoryData" [value]="data.id">
+              {{ data.name | titlecase }} (ID: {{ data.id }})
+            </option>
+          </select>
+          <div *ngIf="productForm.get('categoryId')?.invalid && productForm.get('categoryId')?.touched" class="text-danger">
+            Category selection is required.
+          </div>
+        </div>
+
+        <!-- Upload Images -->
+        <div class="col-md-6">
+          <label for="images" class="form-label fw-semibold">Upload Images</label>
+          <input
+            type="file"
+            id="Images"
+            class="form-control"
+            (change)="onFileSelected($event)"
+            multiple
+          />
+
+          <div *ngIf="imagePreviews.length > 0" class="mt-3">
+            <h6 class="fw-semibold">Preview:</h6>
+            <div class="d-flex flex-wrap gap-2">
+              <div *ngFor="let image of imagePreviews">
+                <img
+                  [src]="image"
+                  alt="Preview"
+                  class="img-thumbnail"
+                  style="width: 100px; height: 100px; object-fit: cover;"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="d-flex justify-content-end gap-3 mt-5">
+        <button type="button" class="btn btn-outline-secondary px-4 py-2" (click)="closeModal()">Close</button>
+        <button type="submit" class="btn btn-primary px-4 py-2" [disabled]="productForm.invalid">
+          {{ productId ? 'Update' : 'Save' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

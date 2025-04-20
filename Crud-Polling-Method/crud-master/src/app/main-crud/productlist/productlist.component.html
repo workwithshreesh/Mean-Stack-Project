@@ -1,0 +1,102 @@
+<div class="d-flex justify-content-center align-items-center" style="height: 100vh; margin: 40px 0">
+  <div class="card" style="width: 70%;">
+    <div class="container">
+      <button class="btn btn-lg btn-primary m-2" (click)="open()">Add</button>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Sr.No</th>
+          <th scope="col">{{headers[1] | titlecase}}</th>
+          <th scope="col">{{headers[0] | titlecase}}</th>
+          <th scope="col">{{headers[5] | titlecase}}</th>
+          <th scope="col">{{headers[6] | titlecase}}</th>
+
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of AllData?.Products; index as i">
+          <th scope="row">{{i+1}}</th>
+          <td>{{data.name}}</td>
+          <td>{{data.id}}</td>
+          <td>{{data.category_id}}</td>
+          <td>{{data.category_name}}</td>
+
+          <td>
+            <button class="btn btn-sm btn-warning me-1" (click)="openEdit(data)">Edit</button>
+            <button class="btn btn-sm btn-danger me-1" (click)="openDelete(data)">Dell</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-center align-items-center" style="width: 100%;height:100%;">
+
+      <div *ngIf="totalPages > 1" class="pagination">
+        <button class="btn btn-secondary me-2" (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+        <span>Page {{ currentPage }} of {{ totalPages }}</span>
+        <button class="btn btn-primary ms-2" (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center" style="width: 100%;height:100%;">
+      <div *ngIf="totalPages > 1">
+        <button class="btn btn-info me-1 m-1" *ngFor="let page of [].constructor(totalPages); let i = index" 
+                (click)="goToPage(i + 1)">
+          {{ i + 1 }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Modal Template -->
+<ng-template #modalContent let-modal>
+  <div class="modal-header">
+    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+    <button type="button" class="btn-close" (click)="modal.close()"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="FormsData">
+      <div class="mb-3">
+        <label for="name" class="form-label">Product Name</label>
+        <input type="text" formControlName="name" class="form-control" id="name">
+        <div *ngIf="FormsData.get('name')?.invalid && FormsData.get('name')?.touched" class="text-danger">
+          Product name is required.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="price" class="form-label">Product Price</label>
+        <input type="text" formControlName="price" class="form-control" id="price">
+        <div *ngIf="FormsData.get('price')?.invalid && FormsData.get('price')?.touched" class="text-danger">
+          Valid price is required.
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="category" class="form-label">Select Category</label>
+        <select class="form-select" id="category" formControlName="category_id">
+          <option value="" disabled>Select Category</option>
+          <option *ngFor="let data of CatData?.categories" [value]="data.id">
+            {{ data.name | titlecase }}   {{data.id}}
+          </option>
+        </select>
+        <div *ngIf="FormsData.get('category_id')?.invalid && FormsData.get('category_id')?.touched" class="text-danger">
+          Category selection is required.
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Close</button>
+    @if(!EditData){
+      <button  type="button" class="btn btn-primary" (click)="saveChanges()" [disabled]="FormsData.invalid">Save changes</button>
+    }@else{
+      <button  type="button" class="btn btn-primary" (click)="editChanges()" [disabled]="FormsData.invalid">Edit changes</button>
+    }
+  </div>
+</ng-template>

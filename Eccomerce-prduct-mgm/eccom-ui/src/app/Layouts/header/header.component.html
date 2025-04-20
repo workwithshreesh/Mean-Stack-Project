@@ -1,0 +1,47 @@
+<nav class="navbar navbar-expand-lg navbar-light shadow-sm p-3" style="background-color: #e3f2fd;">
+    <div class="container">
+      <!-- Brand -->
+      <a class="navbar-brand fw-bold" routerLink="/">Ecommerce</a>
+  
+      <!-- Toggler -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <!-- Nav links -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto gap-3">
+          <li class="nav-item">
+            <a class="nav-link fadeIn" routerLink="/">🏠 Home</a>
+          </li>
+  
+          <!-- Only show for sellers -->
+          <li class="nav-item" *ngIf="authService.isLoggedIn() && authService.isSeller()">
+            <a class="nav-link fadeIn delay-1" routerLink="/seller-dashboard/product">🛍️ Products</a>
+          </li>
+          <li class="nav-item" *ngIf="authService.isLoggedIn() && authService.isSeller()">
+            <a class="nav-link fadeIn" routerLink="/seller-dashboard/category">🗂️ Category</a>
+          </li>
+  
+          <!-- Show if NOT logged in -->
+          <ng-container *ngIf="!authService.isLoggedIn()">
+            <li class="nav-item">
+              <a class="nav-link fadeIn" routerLink="/authentication/login">🔐 Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fadeIn" routerLink="/authentication/register">📝 Register</a>
+            </li>
+          </ng-container>
+  
+          <!-- Show if logged in -->
+          <ng-container *ngIf="authService.isLoggedIn()">
+            <li class="nav-item">
+              <a class="nav-link fadeIn text-danger" (click)="logout()">🚪 Logout</a>
+            </li>
+          </ng-container>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  

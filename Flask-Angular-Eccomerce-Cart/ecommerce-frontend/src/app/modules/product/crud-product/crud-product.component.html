@@ -1,0 +1,68 @@
+<div class="container mt-5">
+    <h2 class="fw-bold">Manage Products</h2>
+    <button class="btn btn-primary mb-3"  data-bs-toggle="modal" data-bs-target="#productModal" (click)="addNew()" >Add New Product</button>
+    <div class="list-group" id="product-list">
+        <div class="list-group-item d-flex align-items-center" *ngFor="let product of allProductData">
+            <img src="{{ Image_Url+(product.image.split('\\').pop().split('/').pop()) }}" 
+                        alt="Product Image" class="img-thumbnail me-3" width="80">
+            <div class="flex-grow-1">
+                <h5 class="mb-1">{{product?.name}}</h5>
+                <p class="mb-1">{{product?.description}}</p>
+            </div>
+            <button class="btn btn-warning me-2" (click)="oneditClick(product?.id)" data-bs-toggle="modal" data-bs-target="#productModal" >
+                ✏️ 
+            </button>
+            
+            <button class="btn btn-danger" (click)="deleteProduct(product)">
+                🗑️ 
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Product Management Modal -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Add/Edit Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="formData">
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="productName" formControlName="name" required>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="productPrice" class="form-label">Price</label>
+                        <input type="text" class="form-control" id="productPrice" formControlName="price" required>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="productDescription" formControlName="description" required></textarea>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="productImage" class="form-label">Upload Image</label>
+                        <input class="form-control" formControlName="image" type="file" id="formFile" (change)="onFileSelect($event)">
+                    </div>
+                
+                    <input type="hidden" id="productId" formControlName="id">
+                </form>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                
+                <button type="button" class="btn btn-primary" *ngIf="!isEdit" (click)="saveProduct()" data-bs-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-primary" *ngIf="isEdit" (click)="editProduct()" data-bs-dismiss="modal">Update</button>
+
+            </div>
+        </div>
+    </div>
+</div>
