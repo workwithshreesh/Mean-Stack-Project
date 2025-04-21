@@ -4,6 +4,7 @@ import { AddEditComponent } from './add-edit/add-edit.component';
 import { CategoryComponent } from './category/category.component';
 import { roleGuard } from '../../Guards/role.guard';
 import { ProductListComponent } from './product-list/product-list.component';
+import { ProductReportComponent } from './product-report/product-report.component';
 
 const routes: Routes = [
     {
@@ -27,6 +28,10 @@ const routes: Routes = [
       {
         path:"product",
         component:ProductListComponent
+      },
+      {
+        path:"report",
+        component:ProductReportComponent
       }
 ];
 

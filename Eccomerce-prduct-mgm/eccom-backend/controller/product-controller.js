@@ -105,7 +105,7 @@ exports.getAllProducts = async (req, res) => {
     });
 
     // Calculate the total pages
-    const totalPages = Math.floor(count / limitNumber);
+    const totalPages = Math.ceil(count / limitNumber);
 
     // Send the response with products, current page, and total pages
     res.json({

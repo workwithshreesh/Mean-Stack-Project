@@ -23,6 +23,11 @@
           <li class="nav-item" *ngIf="authService.isLoggedIn() && authService.isSeller()">
             <a class="nav-link fadeIn" routerLink="/seller-dashboard/category">🗂️ Category</a>
           </li>
+
+          <!-- Reports genrate -->
+          <li class="nav-item" *ngIf="authService.isLoggedIn() && authService.isSeller()">
+            <a class="nav-link fadeIn" routerLink="/seller-dashboard/report">📊 Report</a>
+          </li> 
   
           <!-- Show if NOT logged in -->
           <ng-container *ngIf="!authService.isLoggedIn()">

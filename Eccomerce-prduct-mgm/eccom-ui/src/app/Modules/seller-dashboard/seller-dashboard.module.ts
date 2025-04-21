@@ -6,12 +6,14 @@ import { CategoryComponent } from './category/category.component';
 import { ProductListComponent } from './product-list/product-list.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { ProductReportComponent } from './product-report/product-report.component';
 
 @NgModule({
   declarations: [
     AddEditComponent,
     CategoryComponent,
-    ProductListComponent
+    ProductListComponent,
+    ProductReportComponent
   ],
   imports: [
     CommonModule,

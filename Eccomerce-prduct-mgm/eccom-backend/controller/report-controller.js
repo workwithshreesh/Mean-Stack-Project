@@ -1,4 +1,4 @@
-const { Product, Category } = require("../models");
+const { Product, Category, User } = require("../models");
 
 exports.genrateSellerReport = async (req, res) => {
     try{
@@ -8,14 +8,19 @@ exports.genrateSellerReport = async (req, res) => {
         const products = await Product.findAll({
             where: { userId },
             paranoid: false,
-            include: [{ model: Category, attributes: ['name']}]
+            include: [
+                { model: Category, attributes: ['name']},
+                { model: User, attributes: ['name', 'email']}
+            ]
         });
 
-        const report = product.map(p => ({
+        const report = products.map(p => ({
             productId: p.id,
             productName: p.name,
             categoryName: p.Category.name,
             price: p.price,
+            sellerName: p.User.name,
+            sellerEmail: p.User.email,
             createdAt: p.createdAt,
             updatedAt: p.updatedAt,
             deletedAt: p.deletedAt
