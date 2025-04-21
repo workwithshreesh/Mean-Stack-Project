@@ -41,7 +41,7 @@ export class ProductListComponent {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.productService.getProducts(this.currentPage, this.limit, this.searchTerm).subscribe({
+    this.productService.getProductByUserId(this.currentPage, this.limit, this.searchTerm).subscribe({
       next: (response: any) => {
         this.allProducts = response.products; 
         this.totalCount = response.totalCount;

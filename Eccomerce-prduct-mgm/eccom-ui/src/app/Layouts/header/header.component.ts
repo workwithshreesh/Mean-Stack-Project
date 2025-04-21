@@ -18,6 +18,6 @@ export class HeaderComponent {
   // logout function calling service logout
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/authentication/login']);
   }
 }

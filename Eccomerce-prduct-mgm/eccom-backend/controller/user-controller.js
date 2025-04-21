@@ -45,7 +45,6 @@ exports.createNewUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
     try {
       const { email, password, role } = req.body;
-      console.log(req.body)
 
       if (!email || !password || !role) {
         return res.status(400).json({ message: "All fields are required." });

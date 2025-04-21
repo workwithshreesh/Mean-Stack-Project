@@ -15,7 +15,7 @@ exports.getSuggestions = async (req, res) => {
     const suggestion = await Product.findAll({
       where: {
         name: {
-          [Op.iLike]: `${search}%`  // Case-insensitive search for PostgreSQL
+          [Op.like]: `${search}%`  // Case-insensitive search for PostgreSQL
         }
       },
       attributes: ['id', 'name'],
@@ -35,7 +35,7 @@ exports.getSuggestions = async (req, res) => {
 // create new product
 exports.createProductWithFiles = async (req, res) => {
   try {
-    const { name, price, categoryId } = req.body;
+    const { name, price, categoryId, userId } = req.body;
 
     let category = await Category.findOne({ where: { id: categoryId } });
     if (!category) {
@@ -46,7 +46,8 @@ exports.createProductWithFiles = async (req, res) => {
     const product = await Product.create({
       name,
       price,
-      categoryId
+      categoryId,
+      userId
     });
 
     if (req.files && req.files.length > 0) {
@@ -90,7 +91,7 @@ exports.getAllProducts = async (req, res) => {
     // search the query using where clause
     const whereClause = search ? {
       name: {
-        [Op.iLike]: `%${search}%`
+        [Op.like]: `%${search}%`
       }
     } : {};
 
@@ -118,6 +119,52 @@ exports.getAllProducts = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+
+
+exports.getAllProductsUserID = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, search = '' } = req.query;
+    const userId = req.params.id;
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+    const offset = (pageNumber - 1) * limitNumber;
+
+    // Dynamic where clause with search and userId
+    const whereClause = {
+      userId: userId, // Match userId
+    };
+
+    if (search) {
+      whereClause.name = {
+        [Op.like]: `%${search}%`
+      };
+    }
+
+    const { count, rows } = await Product.findAndCountAll({
+      where: whereClause,
+      include: [Category, Image],
+      order: [['price', 'ASC']],
+      limit: limitNumber,
+      offset: offset
+    });
+
+    const totalPages = Math.ceil(count / limitNumber);
+
+    res.json({
+      products: rows,
+      currentPage: pageNumber,
+      totalPages: totalPages,
+      totalCount: count
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 
 
 

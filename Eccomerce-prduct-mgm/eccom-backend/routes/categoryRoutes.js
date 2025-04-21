@@ -32,6 +32,14 @@ router.get(
     controller.getCategoryById
      );
 
+
+router.get(
+     '/getall/:id',
+    auth.verifyToken,
+    auth.requireRole(['seller']),
+    controller.getAllCategoriesUserId
+    );
+
 router.put(
     '/:id',
     auth.verifyToken,

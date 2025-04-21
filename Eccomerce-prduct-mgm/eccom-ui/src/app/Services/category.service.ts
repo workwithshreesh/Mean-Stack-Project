@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/envirnoments';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Category } from '../Interface/Category.interface';
+import { AuthService } from './auth.service';
 
 
 @Injectable({
@@ -12,7 +13,10 @@ export class CategoryService {
 
   private Base_URL = environment.baseUrl+"/categories";
   
-    constructor(private http: HttpClient) { }
+    constructor(
+      private http: HttpClient,
+      private authService:AuthService
+    ) { }
   
     // GET all Categorys
     getCategorysAll(): Observable<Category[]> {
@@ -37,10 +41,31 @@ export class CategoryService {
             .set('page', page.toString())
             .set('limit', limit.toString())
             .set('search',search.toString());
-      
+
           return this.http.get<Category[]>(this.Base_URL, { params }).pipe(
             catchError(this.handleError)
           );
+    }
+
+
+    getCategoryByUserId(page: number, limit: number, search: string):Observable<Category[]>{
+      const params = new HttpParams()
+            .set('page', page.toString())
+            .set('limit', limit.toString())
+            .set('search',search.toString());
+            const userId = this.authService.getUserId() || '';
+
+         return this.http.get<Category[]>(this.Base_URL+'/getall/'+userId,{ params }).pipe(
+          catchError(this.handleError)
+         );
+    }
+
+
+    getCategoryByUserIdForm():Observable<Category[]>{
+      const userId = this.authService.getUserId() || ''
+         return this.http.get<Category[]>(this.Base_URL+'/getall/'+userId).pipe(
+          catchError(this.handleError)
+         );
     }
   
     // GET Category by ID

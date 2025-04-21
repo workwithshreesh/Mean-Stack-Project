@@ -20,6 +20,9 @@ router.get('/', productController.getAllProducts);
 // Only authenticated users can view product by ID
 router.get('/:id', auth.verifyToken, productController.getProductById);
 
+// get by user id
+router.get('/getall/:id', auth.verifyToken, auth.requireRole(['seller']) ,productController.getAllProductsUserID)
+
 // Only 'seller' can update or delete products
 router.put(
   '/:id',

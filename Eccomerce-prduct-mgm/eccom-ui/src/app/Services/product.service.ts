@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/envirnoments';
 import { catchError, Observable, throwError } from 'rxjs';
 import { Product } from '../Interface/Product.interface';
+import { AuthService } from './auth.service';
+import { Category } from '../Interface/Category.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,9 @@ export class ProductService {
 
   private Base_URL = environment.baseUrl+"/products";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+              private authService: AuthService
+  ) { }
 
 
   // pagination
@@ -24,6 +28,19 @@ export class ProductService {
     return this.http.get<Product[]>(this.Base_URL, { params }).pipe(
       catchError(this.handleError)
     );
+  }
+
+
+  getProductByUserId(page: number, limit: number, search: string):Observable<Product[]>{
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString())
+      .set('search',search.toString());
+
+    const userId = this.authService.getUserId() || '';
+         return this.http.get<Product[]>(this.Base_URL+'/getall/'+userId, { params }).pipe(
+          catchError(this.handleError)
+         );
   }
 
 

@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { CategoryService } from '../../../Services/category.service';
 import { Category } from '../../../Interface/Category.interface';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../Services/auth.service';
 
 
 @Component({
@@ -30,6 +31,7 @@ export class AddEditComponent {
     private productService: ProductService,
     private productDataService: ProductDataService,
     private categoryService:CategoryService,
+    private authService:AuthService,
     private router:Router
   ) {}
 
@@ -86,7 +88,7 @@ export class AddEditComponent {
   // Retrive all category 
 
   getCategorys(){
-    this.categorySubscribtion = this.categoryService.getCategorysAll().subscribe((data:any)=>{
+    this.categorySubscribtion = this.categoryService.getCategoryByUserIdForm().subscribe((data:any)=>{
       this.categoryData = data.category;
     });
   }
@@ -103,6 +105,13 @@ export class AddEditComponent {
     formData.append('name', this.productForm.get('name')?.value);
     formData.append('price', this.productForm.get('price')?.value);
     formData.append('categoryId', this.productForm.value.categoryId);
+    const userId = this.authService.getUserId() || '';
+    if (!userId) {
+      alert('User not authenticated!');
+      return;
+    }
+    formData.append('userId', userId.toString());
+    
 
     if (this.selectedFiles.length > 0) {
       this.selectedFiles.forEach(file => {

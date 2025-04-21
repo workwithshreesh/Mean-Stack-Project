@@ -43,6 +43,11 @@ export class AuthService {
     return auth?.token || null;
   }
 
+  getUserId(): number | null {
+    const auth = this.getAuth();
+    return auth?.id || null;
+  }
+
   getUserRole(): string | null {
     const auth = this.getAuth();
     return auth?.role || null;

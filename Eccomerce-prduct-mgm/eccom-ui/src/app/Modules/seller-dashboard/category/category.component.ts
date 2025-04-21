@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Category } from '../../../Interface/Category.interface';
 import { CategoryService } from '../../../Services/category.service';
+import { AuthService } from '../../../Services/auth.service';
 
 @Component({
   selector: 'app-category',
@@ -31,7 +32,10 @@ export class CategoryComponent {
   suggestions: string[] = [];
 
 
-  constructor(private categoryService: CategoryService) {}
+  constructor(
+    private categoryService: CategoryService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadCategories();
@@ -39,7 +43,7 @@ export class CategoryComponent {
 
   loadCategories(): void {
     this.isLoading = true;
-    this.categoryService.getCategorys(this.currentPage, this.limit, this.searchTerm).subscribe({
+    this.categoryService.getCategoryByUserId(this.currentPage, this.limit, this.searchTerm).subscribe({
       next: (data:any) => {
         this.categories = data.category;
         this.filteredCategories = [...this.categories];
@@ -77,7 +81,9 @@ export class CategoryComponent {
     }
 
     this.isSaving = true;
-    const categoryData = { name: this.modalCategoryName.trim() };
+    const userId = this.authService.getUserId() || '';
+
+    const categoryData = { name: this.modalCategoryName.trim(), userId: userId };
 
     const request = this.editingCategoryId
       ? this.categoryService.updateCategory(this.editingCategoryId, categoryData)
