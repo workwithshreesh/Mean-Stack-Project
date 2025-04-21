@@ -100,7 +100,7 @@ exports.getAllCategoriesUserId = async (req, res) => {
   try {
     const { page = 1, limit = 10, search = '' } = req.query;  // get page limit and and currentpage and search in query parameter
 
-    userId = req.params.id;
+    const userId = req.params.id;
 
 
     // Convert to integers

@@ -20,5 +20,10 @@ module.exports = (sequelize) => {
       defaultValue: DataTypes.UUIDV4,
       unique: true
     }
-  });
+  },
+  {
+    paranoid: true, 
+    timestamps: true 
+  }
+   );
 };
