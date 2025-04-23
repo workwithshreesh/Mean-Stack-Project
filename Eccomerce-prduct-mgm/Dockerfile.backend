@@ -1,0 +1,25 @@
+# syntax=docker/dockerfile:1
+
+ARG NODE_VERSION=22.14.0
+
+FROM node:${NODE_VERSION}-alpine
+
+ENV NODE_ENV production
+
+WORKDIR /usr/src/app
+
+# Copy package files from backend
+COPY backend/package*.json ./
+
+# Use cache mount to speed up build, install only prod dependencies
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev
+
+USER node
+
+# Copy rest of backend source code
+COPY eccom-backend/ ./
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
