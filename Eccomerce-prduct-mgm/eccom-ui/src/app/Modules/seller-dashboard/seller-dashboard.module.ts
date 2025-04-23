@@ -7,13 +7,15 @@ import { ProductListComponent } from './product-list/product-list.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ProductReportComponent } from './product-report/product-report.component';
+import { ProductUploadComponent } from './product-upload/product-upload.component';
 
 @NgModule({
   declarations: [
     AddEditComponent,
     CategoryComponent,
     ProductListComponent,
-    ProductReportComponent
+    ProductReportComponent,
+    ProductUploadComponent,
   ],
   imports: [
     CommonModule,

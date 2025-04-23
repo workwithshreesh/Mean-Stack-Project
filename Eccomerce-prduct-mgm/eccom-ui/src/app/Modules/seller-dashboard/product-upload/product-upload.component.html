@@ -1,0 +1,16 @@
+<p>product-upload works!</p>
+<a href="assets/excel/product-template.xlsx" download>Download Excel Template</a>
+<input type="file" (change)="onFileUpload($event)" accept=".xlsx, .xls" />
+
+<table *ngIf="productData.length">
+  <thead>
+    <tr><th>Name</th><th>Category</th><th>Price</th></tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of productData">
+      <td [ngClass]="{'error-cell': hasError(row, 'name')}" contenteditable>{{ row.name }}</td>
+      <td [ngClass]="{'error-cell': hasError(row, 'category')}" contenteditable>{{ row.category }}</td>
+      <td [ngClass]="{'error-cell': hasError(row, 'price')}" contenteditable>{{ row.price }}</td>
+    </tr>
+  </tbody>
+</table>

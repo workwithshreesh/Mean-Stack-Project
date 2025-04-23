@@ -13,6 +13,14 @@ router.post(
   productController.createProductWithFiles
 );
 
+
+// create a bulk product
+router.post(
+  '/createbulk', auth.verifyToken,
+  auth.requireRole(['seller']),
+  productController.bulkUploadProducts
+);
+
 // Public routes
 router.get("/suggestion", productController.getSuggestions);
 router.get('/', productController.getAllProducts);
