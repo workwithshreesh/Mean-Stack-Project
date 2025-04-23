@@ -15,11 +15,11 @@ router.post(
 
 
 // create a bulk product
-router.post(
-  '/createbulk', auth.verifyToken,
-  auth.requireRole(['seller']),
-  productController.bulkUploadProducts
-);
+// router.post(
+//   '/createbulk', auth.verifyToken,
+//   auth.requireRole(['seller']),
+//   productController.bulkUploadProducts
+// );
 
 // Public routes
 router.get("/suggestion", productController.getSuggestions);
