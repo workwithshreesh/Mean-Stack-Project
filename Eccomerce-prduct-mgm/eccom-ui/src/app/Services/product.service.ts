@@ -69,6 +69,13 @@ export class ProductService {
     );
   }
 
+  // POST create a bulk product
+  createBulkProduct(product: any, id: number): Observable<any> {
+    return this.http.post<any>(`${this.Base_URL}/createbulk/${id}`,product).pipe(
+      catchError(this.handleError)
+    )
+  }
+
 
   // PUT update an existing product
   updateProduct(id: number, product: any ): Observable<any> {

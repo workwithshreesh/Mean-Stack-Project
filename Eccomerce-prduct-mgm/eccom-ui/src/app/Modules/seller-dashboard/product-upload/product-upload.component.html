@@ -1,60 +1,65 @@
 <h2 class="text-center mb-4">Bulk Product Upload</h2>
 
+<!-- Error Message -->
+<div *ngIf="errorFalgMessage" class="alert alert-danger text-center">
+    {{ errorFalgMessage }}
+  </div>
+
+<a href="assets/excel/product-template.xlsx" download>Download Excel Template</a>
+
 <div class="d-flex justify-content-start mb-3">
   <input type="file" (change)="onFileChange($event)" accept=".xlsx, .xls" class="form-control w-auto" />
 </div>
 
 <form (ngSubmit)="submit()" *ngIf="formGroups.length > 0">
   <div class="table-responsive">
-    <table class="excel-table">
-      <thead>
-        <tr>
-          <th>Product Name</th>
-          <th>Category</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let group of formGroups; let i = index">
-          <td class="excel-cell">
-            <input
-              type="text"
-              [formControl]="getControl(group, 'name')"
-              [readonly]="!isInvalid('name', group)"
-              [ngClass]="{ 'invalid': isInvalid('name', group) }"
-              class="excel-input"
-              placeholder="Product Name"
-            />
-            <span class="edit-icon" *ngIf="isInvalid('name', group)">✎</span>
-          </td>
-          <td class="excel-cell">
-            <input
-              type="text"
-              [formControl]="getControl(group, 'category')"
-              [readonly]="!isInvalid('category', group)"
-              [ngClass]="{ 'invalid': isInvalid('category', group) }"
-              class="excel-input"
-              placeholder="Category"
-            />
-            <span class="edit-icon" *ngIf="isInvalid('category', group)">✎</span>
-          </td>
-          <td class="excel-cell">
-            <input
-              type="number"
-              [formControl]="getControl(group, 'price')"
-              [readonly]="!isInvalid('price', group)"
-              [ngClass]="{ 'invalid': isInvalid('price', group) }"
-              class="excel-input"
-              placeholder="Price"
-            />
-            <span class="edit-icon" *ngIf="isInvalid('price', group)">✎</span>
-          </td>
-        </tr>        
-      </tbody>
-    </table>
+    <table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let group of formGroups; let i = index" [formGroup]="group">
+            <td>
+              <input
+                formControlName="name"
+                [ngClass]="{ 'error': isInvalid('name', group) }"
+                placeholder="Product Name"
+              />
+            </td>
+            <td>
+              <input
+                formControlName="category"
+                [ngClass]="{ 'error': isInvalid('category', group) }"
+                placeholder="Category"
+              />
+              <div class="error-text" *ngIf="getControl(group, 'category').errors?.['invalidCategory']">
+                  Invalid category
+              </div>
+            </td>
+            <td>
+              <input
+                formControlName="price"
+                type="number"
+                [ngClass]="{ 'error': isInvalid('price', group) }"
+                placeholder="Price"
+              />
+            </td>
+            <td>
+              <button (click)="deleteRow(i)">🗑️ Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      
   </div>
 
   <div class="text-end mt-3">
-    <button type="submit" class="btn btn-success px-4">Submit</button>
+    <button class="me-3" type="button"  (click)="addRow()">➕ Add Row</button>
+    <button  (click)="submit()">✅ Submit</button>
   </div>
 </form>

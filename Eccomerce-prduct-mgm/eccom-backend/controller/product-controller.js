@@ -75,47 +75,48 @@ exports.createProductWithFiles = async (req, res) => {
 exports.bulkUploadProducts = async (req, res) => {
   const products = req.body; // Expected array of products
 
+  const userId = req.params.id;
+
+  if(!userId){
+    return res.status(400).json({message: 'User id is not found.'})
+  }
+
   if (!Array.isArray(products)) {
     return res.status(400).json({ error: 'Invalid payload format. Expected an array of products.' });
   }
 
-  const results = [];
-  for (let i = 0; i < products.length; i++) {
-    const { name, category, price, userId } = products[i];
+  const results = await Promise.all(products.map(async (product, i) => {
+    const { name, category, price } = product;
     const errors = {};
-
     if (!name || name.length < 2) errors.name = 'Invalid product name';
     if (!category) errors.category = 'Category is required';
     if (!price || price <= 0) errors.price = 'Invalid price';
-
+  
     let categoryRecord = null;
     if (!errors.category) {
-      categoryRecord = await Category.findOne({ where: { name: category } });
+      categoryRecord = await Category.findOne({ where: { name: category, userId } });
       if (!categoryRecord) {
         errors.category = 'Category not found';
-        // Optional: create if not found
-        // categoryRecord = await Category.create({ name: category });
       }
     }
-
+  
     if (Object.keys(errors).length > 0) {
-      results.push({ index: i, success: false, errors });
-      continue;
+      return { index: i, success: false, errors };
     }
-
+  
     try {
       await Product.create({
         name,
         price,
         categoryId: categoryRecord.id,
-        userId: userId || null // Optional: from login or form
+        userId
       });
-      results.push({ index: i, success: true });
+      return { index: i, success: true };
     } catch (err) {
-      results.push({ index: i, success: false, errors: { server: err.message } });
+      return { index: i, success: false, errors: { server: err.message } };
     }
-  }
-
+  }));
+  
   res.status(207).json(results); // 207: Multi-Status
 };
 

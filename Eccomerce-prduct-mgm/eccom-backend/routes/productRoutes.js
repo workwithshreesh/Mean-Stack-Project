@@ -15,11 +15,11 @@ router.post(
 
 
 // create a bulk product
-// router.post(
-//   '/createbulk', auth.verifyToken,
-//   auth.requireRole(['seller']),
-//   productController.bulkUploadProducts
-// );
+router.post(
+  '/createbulk/:id', auth.verifyToken,
+  auth.requireRole(['seller']),
+  productController.bulkUploadProducts
+);
 
 // Public routes
 router.get("/suggestion", productController.getSuggestions);
@@ -29,7 +29,9 @@ router.get('/', productController.getAllProducts);
 router.get('/:id', auth.verifyToken, productController.getProductById);
 
 // get by user id
-router.get('/getall/:id', auth.verifyToken, auth.requireRole(['seller']) ,productController.getAllProductsUserID)
+router.get('/getall/:id', auth.verifyToken, auth.requireRole(['seller']) ,productController.getAllProductsUserID);
+
+
 
 // Only 'seller' can update or delete products
 router.put(

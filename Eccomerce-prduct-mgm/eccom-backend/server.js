@@ -10,11 +10,7 @@ const cors = require("cors");
 const app = express();
 
 // Allow origin
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(cors());
 
 
 //  Parse JSON for regular APIs
