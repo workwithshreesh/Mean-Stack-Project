@@ -5,6 +5,7 @@ import { CategoryComponent } from './category/category.component';
 import { roleGuard } from '../../Guards/role.guard';
 import { ProductListComponent } from './product-list/product-list.component';
 import { ProductReportComponent } from './product-report/product-report.component';
+import { ProductUploadComponent } from './product-upload/product-upload.component';
 
 const routes: Routes = [
     {
@@ -32,6 +33,10 @@ const routes: Routes = [
       {
         path:"report",
         component:ProductReportComponent
+      },
+      {
+        path:"bulkUpload",
+        component: ProductUploadComponent
       }
 ];
 

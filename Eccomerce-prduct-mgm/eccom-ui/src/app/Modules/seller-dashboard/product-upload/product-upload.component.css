@@ -1,0 +1,37 @@
+.excel-cell {
+    position: relative;
+  }
+  
+  .excel-input {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    background-color: transparent;
+  }
+  
+  .excel-input:focus {
+    outline: none;
+    border-color: #1890ff;
+    background-color: #e6f7ff;
+  }
+  
+  .invalid {
+    border: 1px solid red !important;
+    background-color: #ffe6e6;
+  }
+  
+  .edit-icon {
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    font-size: 12px;
+    color: #999;
+    pointer-events: none;
+  }
+  
+  
+  .invalid {
+    border: 1px solid red !important;
+    background-color: #ffe6e6;
+  }
+  

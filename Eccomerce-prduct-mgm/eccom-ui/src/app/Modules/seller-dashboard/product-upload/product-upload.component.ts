@@ -1,49 +1,77 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import * as XLSX from 'xlsx';
-
-interface ProductRow {
-  name: string;
-  category: string;
-  price: number;
-  errors?: { [key: string]: string };
-}
 
 @Component({
   selector: 'app-product-upload',
   templateUrl: './product-upload.component.html',
-  styleUrl: './product-upload.component.css'
+  styleUrls: ['./product-upload.component.css'],
 })
 export class ProductUploadComponent {
-  productData: ProductRow[] = [];
+  formGroups: FormGroup[] = [];
 
-  onFileUpload(event: any) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
+  constructor(private fb: FormBuilder) {}
+
+  onFileChange(event: any) {
+    const target: DataTransfer = <DataTransfer>event.target;
+  
+    if (target.files.length !== 1) {
+      alert('Please select a single Excel file.');
+      return;
+    }
+  
+    const reader: FileReader = new FileReader();
+  
     reader.onload = (e: any) => {
-      const bstr = e.target.result;
-      const wb = XLSX.read(bstr, { type: 'binary' });
-      const sheetName = wb.SheetNames[0];
-      const ws = wb.Sheets[sheetName];
-      const data = XLSX.utils.sheet_to_json(ws, { defval: '' }) as ProductRow[];
-
-      this.productData = data.map(row => ({
-        ...row,
-        errors: this.validateRow(row)
-      }));
+      const bstr: string = e.target.result;
+      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+  
+      const wsname: string = wb.SheetNames[0];
+      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+  
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+  
+      // First row is header, skip it
+      this.formGroups = [];  // Clear any existing form groups
+  
+      data.slice(1).forEach((row: any) => {
+        const group = this.fb.group({
+          name: [row[0] || '', Validators.required],
+          category: [row[1] || '', Validators.required],
+          price: [row[2] || '', [Validators.required, Validators.min(1)]],
+        });
+  
+        this.formGroups.push(group);
+      });
+  
+      // Mark all form controls as touched to trigger validation immediately
+      this.formGroups.forEach(group => {
+        group.markAllAsTouched();
+      });
     };
-    reader.readAsBinaryString(file);
+  
+    reader.readAsBinaryString(target.files[0]);
+  }
+  
+
+  getControl(group: FormGroup, field: string): FormControl {
+    return group.get(field) as FormControl;
   }
 
-  validateRow(row: ProductRow): any {
-    const errors: any = {};
-    if (!row.name || row.name.length < 2) errors.name = 'Name required';
-    if (!row.category) errors.category = 'Category required';
-    if (!row.price || row.price <= 0) errors.price = 'Invalid price';
-    return errors;
+  isInvalid(field: string, group: FormGroup): boolean {
+    const control = group.get(field);
+    return !!(control && control.invalid && (control.dirty || control.touched));
   }
 
-  hasError(row: ProductRow, field: string): boolean {
-    return !!row.errors?.[field];
-  }
+  submit() {
+    if (this.formGroups.some(group => group.invalid)) {
+      alert('Please fix the errors in the form!');
+      this.formGroups.forEach(group => group.markAllAsTouched());
+      return;
+    }
 
+    const data = this.formGroups.map(group => group.value);
+    console.log('Form Submitted:', data);
+    // Proceed with your API logic here
+  }
 }

@@ -79,6 +79,12 @@ export class ProductListComponent {
     this.router.navigate(['/seller-dashboard/add-product']);
   }
 
+
+  bulkUpload() {
+    this.productDataService.clearProductData();
+    this.router.navigate(['/seller-dashboard/bulkUpload']);
+  }
+
   onDeleteClick(product: any) {
     if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
       this.productService.deleteProduct(product.id).subscribe({
