@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { PagenotfoundComponent } from './Layouts/pagenotfound/pagenotfound.component';
+import { ParentComponent } from './parentChiled/parent/parent.component';
+import { ChiledComponent } from './parentChiled/chiled/chiled.component';
 
 
 export const routes: Routes = [
@@ -17,6 +19,10 @@ export const routes: Routes = [
         path:"",
         loadChildren: () => 
             import(`./Modules/user-dashboard/user-dashboard.module`).then(m=>m.UserDashboardModule)
+    },
+    {
+        path:"parent",
+        component:ParentComponent
     },
      // Add a fallback route
   { 
