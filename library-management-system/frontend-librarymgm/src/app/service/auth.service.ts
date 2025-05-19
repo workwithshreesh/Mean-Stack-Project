@@ -1,74 +1,122 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import {jwtDecode} from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import { CommonsettingService } from './commonsetting.service';
+
+interface JwtTokenPayload {
+  exp: number;
+  [key: string]: any;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private readonly baseUrl = 'http://localhost:8000/auth/';
+  private readonly tokenKey = 'jwtToken';
 
-  private baseUrl = 'http://localhost:8000/auth/'; // Your API base URL
   private currentUserSubject: BehaviorSubject<any>;
-  public currentUser;
+  public currentUser$: Observable<any>;
 
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private router: Router,
     private commonSetting: CommonsettingService
   ) {
-    const token = this.commonSetting.getSessionItem('jwtToken');
-    this.currentUserSubject = new BehaviorSubject<any>(token ? jwtDecode(token) : null);
-    this.currentUser = this.currentUserSubject.asObservable();
+    const token = this.getToken();
+    const user = token ? this.decodeToken(token) : null;
+
+    this.currentUserSubject = new BehaviorSubject<any>(user);
+    this.currentUser$ = this.currentUserSubject.asObservable();
   }
 
-  registerNewUser(data: any): Observable<any> {
-    return this.http.post(this.baseUrl + 'register', data);
-  }
+  // --- Auth APIs ---
 
-  login(data: any): Observable<any> {
-    return this.http.post<any>(this.baseUrl + 'login', data).pipe(
-      tap(response => {
-        this.commonSetting.setSessionItem('jwtToken', response.token);  
-        this.currentUserSubject.next(jwtDecode(response.token));  
-      })
+  register(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}register`, data).pipe(
+      catchError(this.handleError)
     );
   }
 
-  get currentUserValue() {
-    return this.currentUserSubject.value;
+  login(credentials: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}login`, credentials).pipe(
+      tap(response => {
+        this.setToken(response.token);
+        const user = this.decodeToken(response.token);
+        this.currentUserSubject.next(user);
+      }),
+      catchError(this.handleError)
+    );
   }
 
-  logout() {
-    localStorage.removeItem('jwtToken');
-    this.currentUserSubject.next(null);  
+  logout(): void {
+    this.clearToken();
+    this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
-  isAuthenticated(): boolean {
-    const token = this.commonSetting.getSessionItem('jwtToken');
-    return token ? !this.isTokenExpired(token) : false;
+  // --- Token Methods ---
+
+  getToken(): string | null {
+    return this.commonSetting.getSessionItem(this.tokenKey);
+  }
+
+  private setToken(token: string): void {
+    this.commonSetting.setSessionItem(this.tokenKey, token);
+  }
+
+  private clearToken(): void {
+    this.commonSetting.removeSessionItem(this.tokenKey); // added remove method support
+  }
+
+  private decodeToken(token: string): JwtTokenPayload | null {
+    try {
+      return jwtDecode<JwtTokenPayload>(token);
+    } catch {
+      return null;
+    }
   }
 
   private isTokenExpired(token: string): boolean {
-    const decoded: any = jwtDecode(token);
-    const exp = decoded.exp;
-    return exp < Date.now() / 1000;
+    const decoded = this.decodeToken(token);
+    if (!decoded || !decoded.exp) return true;
+    return decoded.exp < Math.floor(Date.now() / 1000);
   }
 
-  getToken() {
-    return this.commonSetting.getSessionItem('jwtToken');
-  }
-
-  private getAuthHeaders() {
+  isAuthenticated(): boolean {
     const token = this.getToken();
-    return token ? new HttpHeaders().set('Authorization', `Bearer ${token}`) : new HttpHeaders();
+    return token ? !this.isTokenExpired(token) : false;
   }
+
+  get currentUserValue(): any {
+    return this.currentUserSubject.value;
+  }
+
+  // --- API Example with Secret Key Header ---
 
   getProtectedData(): Observable<any> {
-    return this.http.get<any>('your-protected-api-url', { headers: this.getAuthHeaders() });
+    return this.http.get<any>('your-protected-api-url', {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.getToken();
+    return token
+      ? new HttpHeaders().set('Authorization', `Bearer ${token}`)
+      : new HttpHeaders();
+  }
+
+  // --- Error Handler ---
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    const errorMsg = error.error?.message || error.message || 'An unknown error occurred';
+    console.error('AuthService Error:', errorMsg);
+    return throwError(() => new Error(errorMsg));
   }
 }

@@ -43,4 +43,10 @@ export class CommonsettingService {
     }
   }
 
+  removeSessionItem(key: string){
+    if(this.isBrowser){
+      sessionStorage.removeItem(key);
+    }
+  }
+
 }
