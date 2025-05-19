@@ -1,0 +1,51 @@
+<div class="d-flex justify-content-center align-items-center w-100 vh-100">
+    <div class="card" style="width: 30rem;">
+        <div class="card-body">
+            <h3 class="card-title text-center">Login</h3>
+            <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+                <div class="mb-3">
+                  <label for="InputEmail1" class="form-label">Email address</label>
+                  <input type="email" class="form-control" id="InputEmail1" formControlName="email" aria-describedby="emailHelp"
+                  [ngClass]="{
+                    'is-valid': loginForm.get('email')?.valid && loginForm.get('email')?.touched,
+                    'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+                  }"
+                  >
+                  <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                  <div class="invalid-feedback" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                    <div *ngIf="loginForm.get('email')?.errors?.['required']"> Email is required</div>
+                    <div *ngIf="loginForm.get('email')?.errors?.['email']">Invalid email</div>
+                  </div>                  
+                </div>
+                <div class="mb-3">
+                  <label for="InputPassword1" class="form-label">Password</label>
+                  <input type="password" class="form-control" formControlName="password" id="InputPassword1"
+                  [ngClass]="{
+                    'is-valid': loginForm.get('password')?.valid && loginForm.get('password')?.touched,
+                    'is-invalid': loginForm.get('password')?.invalid && loginForm.get('password')?.touched
+                  }"
+                  >
+                  <div class="invalid-feedback" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                    <div *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</div>
+                    <div *ngIf="loginForm.get('password')?.errors?.['minlength']">Minimum 8 characters required</div>
+                  </div>                  
+                </div>
+                <div class="mb-3 form-check">
+                  <input type="checkbox" class="form-check-input"
+                  formControlName="agreeTerms"
+                  [ngClass]="{
+                    'is-invalid': loginForm.get('agreeTerms')?.invalid && loginForm.get('agreeTerms')?.touched
+                  }"
+                   id="Check1">
+                  <label class="form-check-label" for="Check1">Check me out</label>
+                  <div class="invalid-feedback" *ngIf="loginForm.get('agreeTerms')?.invalid && loginForm.get('agreeTerms')?.touched">
+                    You must agree before submitting.
+                  </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center w-100 h-100">
+                    <button type="submit" class="btn btn-primary w-50 " [disabled]="loginForm.invalid">Submit</button>
+                </div>
+              </form>
+        </div>
+    </div>
+</div>

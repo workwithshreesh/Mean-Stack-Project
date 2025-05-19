@@ -4,6 +4,7 @@ import { Observable, tap } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import {jwtDecode} from 'jwt-decode';
+import { CommonsettingService } from './commonsetting.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,12 @@ export class AuthService {
   private currentUserSubject: BehaviorSubject<any>;
   public currentUser;
 
-  constructor(private http: HttpClient, private router: Router) {
-    const token = localStorage.getItem('jwtToken');
+  constructor(
+    private http: HttpClient, 
+    private router: Router,
+    private commonSetting: CommonsettingService
+  ) {
+    const token = this.commonSetting.getSessionItem('jwtToken');
     this.currentUserSubject = new BehaviorSubject<any>(token ? jwtDecode(token) : null);
     this.currentUser = this.currentUserSubject.asObservable();
   }
@@ -27,7 +32,7 @@ export class AuthService {
   login(data: any): Observable<any> {
     return this.http.post<any>(this.baseUrl + 'login', data).pipe(
       tap(response => {
-        localStorage.setItem('jwtToken', response.token);  
+        this.commonSetting.setSessionItem('jwtToken', response.token);  
         this.currentUserSubject.next(jwtDecode(response.token));  
       })
     );
@@ -44,7 +49,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    const token = localStorage.getItem('jwtToken');
+    const token = this.commonSetting.getSessionItem('jwtToken');
     return token ? !this.isTokenExpired(token) : false;
   }
 
@@ -55,7 +60,7 @@ export class AuthService {
   }
 
   getToken() {
-    return localStorage.getItem('jwtToken');
+    return this.commonSetting.getSessionItem('jwtToken');
   }
 
   private getAuthHeaders() {

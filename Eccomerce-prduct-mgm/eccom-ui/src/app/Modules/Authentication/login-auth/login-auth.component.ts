@@ -52,7 +52,7 @@ export class LoginAuthComponent {
         localStorage.setItem('auth', JSON.stringify(authData));
         this.router.navigate(['/']);
       },
-      error: (err) => {
+      error: (err:any) => {
         console.error("Login error:", err);
         this.errorMessage = err?.error?.message || 'Login failed. Try again.';
       }
