@@ -1,1 +1,78 @@
-<p>register works!</p>
+<div class="d-flex justify-content-center align-items-center w-100 vh-100">
+    <div class="card" style="width: 30rem;">
+        <div class="card-body">
+            <div *ngIf="showAlert"
+            class="alert alert-warning alert-dismissible fade show" role="alert"
+            >
+            <strong>Warning!</strong> {{ errorMsg }}.
+            <button type="button" class="btn-close" (click)="closeAlert()" aria-label="Close"></button>
+            </div>
+
+            <h3 class="card-title text-center">Register</h3>
+            <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" formControlName="username" [ngClass]="{
+                   'is-valid' : registerForm.get('username')?.valid && registerForm.get('username')?.touched,
+                   'is-invalid' : registerForm.get('username')?.invalid && registerForm.get('username')?.touched
+                }">
+                    <div class="invalid-feedback"
+                        *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+                        <div *ngIf="registerForm.get('username')?.errors?.['required']">Username is required</div>
+                        <div *ngIf="registerForm.get('username')?.errors?.['minlength']">Username lenth is invalid</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="InputEmail1" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="InputEmail1" aria-describedby="emailHelp"
+                        formControlName="email" [ngClass]="{
+                        'is-valid': registerForm.get('email')?.valid && registerForm.get('email')?.touched,
+                        'is-invalid': registerForm.get('email')?.invalid && registerForm.get('email')?.touched
+                    }">
+                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                    <div class="invalid-feedback"
+                        *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.dirty || registerForm.get('email')?.touched">
+                        <div *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</div>
+                        <div *ngIf="registerForm.get('email')?.errors?.['email']">Email is Invalid</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="fullName" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" formControlName="fullName" id="fullName" [ngClass]="{
+                        'is-valid': registerForm.get('fullName')?.valid && registerForm.get('fullName')?.touched,
+                        'is-invalid': registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched
+                    }">
+                    <div class="invalid-feedback"
+                        *ngIf="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched">
+                        <div *ngIf="registerForm.get('fullName')?.errors?.['required']">Full Name is rqeuired</div>
+                        <div *ngIf="registerForm.get('fullName')?.errors?.['minlength']">Full Name is inavlid</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" formControlName="password" id="password"
+                        [ngClass]="{
+                        'is-valid': registerForm.get('password')?.valid && registerForm.get('password')?.touched,
+                        'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched  
+                        }">
+                    <div class="invalid-feedback"
+                        *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" ,>
+                        <div *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</div>
+                        <div *ngIf="registerForm.get('password')?.errors?.['minlength']">Password is invalid</div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center align-items-center w-100 h-100">
+                    <button type="submit" class="btn btn-primary w-50 " [disabled]="registerForm.invalid">Submit</button>
+                </div>
+            </form>
+            <div class="container py-2">
+                <p>
+                    Have a account? <a routerLink="/login">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

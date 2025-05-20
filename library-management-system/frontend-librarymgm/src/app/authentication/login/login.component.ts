@@ -13,6 +13,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   // Login Form
   loginForm!:FormGroup
 
+  errorMsg:any;
+  showAlert:boolean = false;
+
   constructor(
     private authService: AuthService,
     private fb:FormBuilder
@@ -32,7 +35,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   // Form intilize
   formInit(){
     this.loginForm = this.fb.group({
-      email: ['',[Validators.required, Validators.email]],
+      username: ['',[Validators.required, Validators.minLength(4)]],
       password: ['', [Validators.required, Validators.minLength(8)]],
       agreeTerms: [false, Validators.requiredTrue]
     });
@@ -45,6 +48,27 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.loginForm.markAllAsTouched();
     }
 
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (res:any) => {
+        console.log(res);
+      },
+      error: (error:any) => {
+        this.showAlert = true;
+        this.errorMsg = error.message || error || 'Something went wrong';
+        console.log(this.errorMsg)
+      },
+      complete: () => {
+        console.log("Observable is completed")
+      }
+    })
+
+  }
+
+
+  closeAlert(){
+    if(this.showAlert){
+      this.showAlert = false;
+    }
   }
 
 }

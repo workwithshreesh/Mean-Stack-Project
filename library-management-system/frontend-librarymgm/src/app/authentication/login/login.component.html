@@ -1,20 +1,25 @@
 <div class="d-flex justify-content-center align-items-center w-100 vh-100">
     <div class="card" style="width: 30rem;">
         <div class="card-body">
+            <div *ngIf="showAlert" class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Warning!</strong> {{ errorMsg }}.
+                <button type="button" class="btn-close" (click)="closeAlert()" aria-label="Close"></button>
+              </div>              
+              
             <h3 class="card-title text-center">Login</h3>
             <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
                 <div class="mb-3">
-                  <label for="InputEmail1" class="form-label">Email address</label>
-                  <input type="email" class="form-control" id="InputEmail1" formControlName="email" aria-describedby="emailHelp"
+                  <label for="InputUsername" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="InputUsername" formControlName="username" 
                   [ngClass]="{
-                    'is-valid': loginForm.get('email')?.valid && loginForm.get('email')?.touched,
-                    'is-invalid': loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+                    'is-valid': loginForm.get('username')?.valid && loginForm.get('username')?.touched,
+                    'is-invalid': loginForm.get('username')?.invalid && loginForm.get('username')?.touched
                   }"
                   >
-                  <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                  <div class="invalid-feedback" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-                    <div *ngIf="loginForm.get('email')?.errors?.['required']"> Email is required</div>
-                    <div *ngIf="loginForm.get('email')?.errors?.['email']">Invalid email</div>
+                  <div id="emailHelp" class="form-text">We'll never share your Username with anyone else.</div>
+                  <div class="invalid-feedback" *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+                    <div *ngIf="loginForm.get('username')?.errors?.['required']"> Username is required</div>
+                    <div *ngIf="loginForm.get('username')?.errors?.['minlength']">Invalid Length</div>
                   </div>                  
                 </div>
                 <div class="mb-3">
@@ -46,6 +51,11 @@
                     <button type="submit" class="btn btn-primary w-50 " [disabled]="loginForm.invalid">Submit</button>
                 </div>
               </form>
+              <div class="container py-2">
+                <p>
+                    Don't have an account? <a routerLink="/register">Register here</a>
+                </p>
+              </div>
         </div>
     </div>
 </div>
