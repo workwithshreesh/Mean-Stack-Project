@@ -1,14 +1,66 @@
+<div *ngIf="!booklist" class="container-fluid">
+  <button class="btn btn-primary mt-3 ms-auto">Add New Record</button>
+</div>
+
+
+<div *ngIf="booklist.length === 0" class="d-flex justify-content-center align-items-center w-100 vh-100 text-center">
+  <div>
+    <h3>No Records Available</h3>
+    <button class="btn btn-primary mt-3" (click)="openModal()">Add New Record</button>
+  </div>
+</div>
+
 
 <div class="container my-3">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                  <h5 class="card-title">Card title</h5>
-                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-                  <a routerLink="read-book" class="btn btn-primary">Go somewhere</a>
-                </div>
-              </div>
+  <div class="row">
+    <div class="col-md-4" *ngFor="let post of booklist">
+      <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">Some quick  text to build on the card title and make up the bulk of the card’s
+            content.</p>
+          <a routerLink="read-book" class="btn btn-primary">Go somewhere</a>
         </div>
+      </div>
     </div>
+  </div>
 </div>
+
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Modal">
+  Launch demo modal
+</button>
+
+
+<!-- Modal -->
+<ng-template #addNewRecord let-modal>
+  <div class="modal-header">
+    <h1 class="modal-title fs-5">Add New Record</h1>
+    <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <!-- Book name -->
+      <div class="mb-3">
+        <label for="bookName" class="form-label">Book Name</label>
+        <input type="text" class="form-control" id="bookName" formControlName="bookName">
+      </div>
+
+      <div class="mb-3">
+        <label for="bookAuthor" class="form-label">Book Author</label>
+        <input type="text" class="form-control" id="bookAuthor" formControlName="bookAuthor">
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Book Description</label>
+        <input type="text" class="form-control" id="description" formControlName="description">
+      </div>
+
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+    <button type="button" class="btn btn-primary">Save changes</button>
+  </div>
+</ng-template>

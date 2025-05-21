@@ -17,6 +17,8 @@ interface JwtTokenPayload {
 export class AuthService {
   private readonly baseUrl = 'http://localhost:8000/auth/';
   private readonly tokenKey = 'jwtToken';
+  private readonly userKey = 'userDetail';
+
 
   private currentUserSubject: BehaviorSubject<any>;
   public currentUser$: Observable<any>;
@@ -46,6 +48,7 @@ export class AuthService {
       tap(response => {
         this.setToken(response.token);
         const user = this.decodeToken(response.token);
+        this.setUserDetail(JSON.stringify(user))
         this.currentUserSubject.next(user);
       }),
       catchError(this.handleError)
@@ -66,6 +69,10 @@ export class AuthService {
 
   private setToken(token: string): void {
     this.commonSetting.setSessionItem(this.tokenKey, token);
+  }
+
+  private setUserDetail(token: string){
+    this.commonSetting.setSessionItem(this.userKey, token)
   }
 
   private clearToken(): void {
@@ -115,8 +122,8 @@ export class AuthService {
   // --- Error Handler ---
 
   private handleError(error: HttpErrorResponse): Observable<never> {
-    const errorMsg = error.error?.message || error.message || 'An unknown error occurred';
-    console.error('AuthService Error:', errorMsg);
-    return throwError(() => new Error(errorMsg));
+    console.error('AuthService Error:', error);
+    const errorMsg = error.error.error || 'An unknown error occurred';
+    return throwError(() => errorMsg);
   }
 }

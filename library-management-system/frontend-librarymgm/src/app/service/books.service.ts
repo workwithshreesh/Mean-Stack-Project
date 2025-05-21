@@ -13,8 +13,8 @@ export class BooksService {
     private http:HttpClient
   ) { }
 
-  getAllBookData():Observable<any>{
-    return this.http.get<any>(this.Base_Url).pipe(
+  getAllBookData(userId:string):Observable<any>{
+    return this.http.get<any>(`${this.Base_Url}${userId}`).pipe(
       catchError(this.handleError)
     );
   }
@@ -45,8 +45,8 @@ export class BooksService {
 
 
   private handleError(error: HttpErrorResponse): Observable<never>{
-    let errorMsg = error?.error.message || error.message || "An unknown error occurred";
-    return throwError(()=> new Error(errorMsg));
+    let errorMsg = error.error.error || "An unknown error occurred";
+    return throwError(()=> errorMsg);
   }
 
 }

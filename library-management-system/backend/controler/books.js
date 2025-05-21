@@ -6,8 +6,10 @@ const AddNewBook = async (req,res) =>{
 
         const {bookname, description, bookAuthor} = req.body;
 
-        if(!bookname, !description, !bookAuthor){
-            return res.status(404).json({message:"Bad Request"});
+        if(!bookname && !description && !bookAuthor){
+            const error = new Error("Bad Request");
+            error.statusCode = 409;
+            throw error;
         }
 
         const addNew = new Books({
@@ -22,7 +24,9 @@ const AddNewBook = async (req,res) =>{
 
     }catch (error){
         console.log(error, "error is in add new book func");
-        throw error
+
+        const status = error.statusCode || 500;
+        return res.status(status).json({error: error.message});
     }
 }
 
@@ -31,9 +35,9 @@ const UpdateBook = async (req,res) => {
     try{
 
         const {bookAuthor, bookname, description} = req.body;
-        const Id = req.params.id
+        const Id = req.params.id;
 
-        const updatedData = {}
+        const updatedData = {};
 
         if (bookAuthor) updatedData.bookAuthor = bookAuthor;
         if (bookname) updatedData.bookname = bookname;
@@ -42,14 +46,18 @@ const UpdateBook = async (req,res) => {
         const updateBook = await Books.findByIdAndUpdate(Id, updatedData, {new: true});
 
         if(!updateBook){
-            return res.status(404).json({message:"book is not created"});
+            const error = new Error("book is not created");
+            error.statusCode = 409;
+            throw error;
         }
 
         return res.status(200).json({message:updateBook})
 
     }catch (error){
         console.log(error, "error in update func");
-        throw error
+
+        const status = error.statusCode || 500;
+        return res.status(status).json({ error: error.message });
     }
 }
 
@@ -59,7 +67,9 @@ const DeleteBook = async (req,res) => {
 
         const Id = req.params.id;
         if(!Id){
-            res.status(404).json({message:"Id is not found"})
+            const error = new Error("Id is not found");
+            error.statusCode = 409;
+            throw error
         }
 
         const book = await Books.findByIdAndDelete(Id)
@@ -71,7 +81,10 @@ const DeleteBook = async (req,res) => {
 
     }catch (error){
         console.log(error, "error in delete book");
-        throw error
+
+        const status = error.statusCode || 500;
+        return res.status(status).json({ error: error.message })
+
     }
 }
 
@@ -81,14 +94,18 @@ const GetAllBook = async (req,res) => {
 
         const book = await Books.find();
         if(!book){
-            return res.status(404).json({message:"Bad Methods"});
+            const error = new Error("Bad Methods");
+            error.statusCode = 409;
+            throw error;
         }
 
         return res.status(200).json({message:book});
 
     }catch(error){
         console.log(error, "error in get all book");
-        throw error;
+
+        const status = error.statusCode || 500;
+        return res.status(status).json({message: error.message});
     }
 }
 
@@ -100,14 +117,18 @@ const getBookById = async (req,res) => {
         const Id = req.params.id;
 
         if(!Id){
-            return res.status(404).json({message:"id is not provided"})
+            const error = new Error("Id is not provided");
+            error.status = 409;
+            throw error;
         }
 
         const book = await Books.findById(Id);
         console.log(book)
 
         if(!book){
-            return res.status(404).json({message:"Book is not found"});
+            const error = new Error("Book is not found");
+            error.statusCode = 409 || 500;
+            throw error;
         }
 
         return res.status(200).json({message:book});
@@ -115,7 +136,8 @@ const getBookById = async (req,res) => {
 
     }catch (error){
         console.log(error, "error in getBookById");
-        throw error;
+        const status = error.statusCode || 500;
+        return res.status(status).json({error: error.message});
     }
 }
 

@@ -52,14 +52,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.authService.register(this.registerForm.value).subscribe(
       (res:any)=> {
         this.showAlert = true;
-        this.errorMsg = res.message || "User has been successfully registered"
-        // setTimeout(()=>{
-        //   this.router.navigate(['/login']);
-        // },2000);
+        this.errorMsg = res.error || "User has been successfully registered"
+
+        setTimeout(()=>{
+          this.router.navigate(['/login']);
+        },2000);
+
       },
       (error:any)=> {
         this.showAlert = true;
-        this.errorMsg = error.error.message || error.message || "Something went wrong";
+        this.errorMsg = error || "Something went wrong";
       },
       ()=>{
         console.log("Observable is completed")

@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../../service/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { routes } from '../../app.routes';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +20,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private fb:FormBuilder
+    private fb:FormBuilder,
+    private router: Router
   ){}
 
   ngOnInit(): void {
@@ -50,11 +53,11 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: (res:any) => {
-        console.log(res);
+        this.router.navigate(['/'])
       },
       error: (error:any) => {
         this.showAlert = true;
-        this.errorMsg = error.message || error || 'Something went wrong';
+        this.errorMsg = error || 'Something went wrong';
         console.log(this.errorMsg)
       },
       complete: () => {

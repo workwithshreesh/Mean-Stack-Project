@@ -9,14 +9,19 @@ const HandleRegister = async (req,res) =>{
         const {username, fullName, password, email} = req.body;
 
         if(!username, !fullName, !password, !email){
-            return res.status(404).json({message:"Bad Request"});
+            const error = new Error("Bad Request");
+            error.statusCode = 500;
+            throw error;
         }
 
         const user = await User.findOne({username});
         const userEmail = await User.findOne({email});
 
         if(user || userEmail){
-            return res.status(200).json({message:"User is already registered"})
+            const error = new Error("Username or email already exists.");
+            error.statusCode = 409 || 500;
+            throw error;
+
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -29,16 +34,20 @@ const HandleRegister = async (req,res) =>{
             password:hashPassword
         });
 
-        if(!newUser){
-            return res.status(404).json({message:"Bad Request user not created"});
-        }
-
         await newUser.save();
-        return res.status(404).json({message:newUser});
+
+        // user without password
+        const { password: _, ...userWithoutPassword } = newUser.toObject();
+
+        return res.status(201).json({
+            message:"User register successfully.",
+            user: userWithoutPassword,
+        });
 
     }catch (error){
-        console.log(error, "error in register");
-        throw error;
+        console.log(error.message, "error in register");
+        const status = error.statusCode || 500;
+        return res.status(status).json({ error: error.message })
     }
 }
 
@@ -50,35 +59,47 @@ const HandleLogin = async (req,res) => {
         const {username, password} = req.body;
 
         if(!username || !password){
-            return res.status(404).json({message:"Bad request"});
+            const error = new Error("All fields are required");
+            error.statusCode = 409;
+            throw error;
         }
 
         const user = await User.findOne({username});
         
         if(!user){
-            return res.status(401).json({message:"User is not register"});
+            const error = new Error("User is not register");
+            error.statusCode = 409;
+            throw error;
         }
         
         if (!user.password) {
-            return res.status(500).json({ message: "Password missing from database" });
+            const error = new Error("Password missing from database");
+            error.statusCode = 409;
+            throw error;
         }
         
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if(!isMatch){
-            return res.status(401).json({message:"password is not matched.."});
+            const error = new Error("Password is not matched..");
+            error.statusCode = 409;
+            throw error;
         }
 
         JWT_SECRET = "librarymgm"
 
         const token = jwt.sign({"userId":user._id}, JWT_SECRET,{expiresIn: "1h"});
 
-        return res.status(200).json({message:token});
+        return res.status(200).json({token:token});
 
     } catch (error){
-        console.log(error,"error in login system");
-        throw error;
+        console.error("Error in register:", error.message);
+
+        // Default to 500 if no custom statusCode was set
+        const status = error.statusCode || 500;
+        return res.status(status).json({ error: error.message });
+
     }
 }
 
