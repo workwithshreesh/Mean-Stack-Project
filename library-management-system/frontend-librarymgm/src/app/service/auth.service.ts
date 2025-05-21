@@ -28,7 +28,7 @@ export class AuthService {
     private router: Router,
     private commonSetting: CommonsettingService
   ) {
-    const token = this.getToken();
+    const token = this.commonSetting.getSessionItem(this.tokenKey);
     const user = token ? this.decodeToken(token) : null;
 
     this.currentUserSubject = new BehaviorSubject<any>(user);
@@ -46,9 +46,9 @@ export class AuthService {
   login(credentials: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}login`, credentials).pipe(
       tap(response => {
-        this.setToken(response.token);
+        this.commonSetting.setSessionItem(this.tokenKey, response.token)
         const user = this.decodeToken(response.token);
-        this.setUserDetail(JSON.stringify(user))
+        this.commonSetting.setSessionItem(this.userKey, JSON.stringify(user))
         this.currentUserSubject.next(user);
       }),
       catchError(this.handleError)
@@ -56,28 +56,12 @@ export class AuthService {
   }
 
   logout(): void {
-    this.clearToken();
+    this.commonSetting.removeSessionItem(this.tokenKey);
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
-  // --- Token Methods ---
-
-  getToken(): string | null {
-    return this.commonSetting.getSessionItem(this.tokenKey);
-  }
-
-  private setToken(token: string): void {
-    this.commonSetting.setSessionItem(this.tokenKey, token);
-  }
-
-  private setUserDetail(token: string){
-    this.commonSetting.setSessionItem(this.userKey, token)
-  }
-
-  private clearToken(): void {
-    this.commonSetting.removeSessionItem(this.tokenKey); // added remove method support
-  }
+  
 
   private decodeToken(token: string): JwtTokenPayload | null {
     try {
@@ -94,7 +78,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    const token = this.getToken();
+    const token = this.commonSetting.getSessionItem(this.tokenKey);
     return token ? !this.isTokenExpired(token) : false;
   }
 
@@ -113,7 +97,7 @@ export class AuthService {
   }
 
   private getAuthHeaders(): HttpHeaders {
-    const token = this.getToken();
+    const token = this.commonSetting.getSessionItem(this.tokenKey);
     return token
       ? new HttpHeaders().set('Authorization', `Bearer ${token}`)
       : new HttpHeaders();
