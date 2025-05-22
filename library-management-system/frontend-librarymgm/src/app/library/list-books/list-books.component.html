@@ -13,24 +13,21 @@
 
 <div class="container my-3">
   <div class="row">
-    <div class="col-md-4" *ngFor="let post of booklist">
+    <div class="col-md-4 mb-3" *ngFor="let post of booklist">
       <div class="card" style="width: 18rem;">
         <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">Some quick  text to build on the card title and make up the bulk of the card’s
-            content.</p>
+          <h5 class="card-title">{{ post.bookname }}</h5>
+          <p class="card-text">{{ post.description | slice:0:70 }}.</p>
           <a routerLink="read-book" class="btn btn-primary">Go somewhere</a>
+        </div>
+        <div class="card-footer">
+          <button class="btn btn-sm btn-warning me-4" (click)="formPatchValue(post)">Edit</button>
+          <button class="btn btn-sm btn-danger" (click)="Delete(post._id)">Delete</button>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Modal">
-  Launch demo modal
-</button>
 
 
 <!-- Modal -->
@@ -40,27 +37,56 @@
     <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
   </div>
   <div class="modal-body">
-    <form>
+    <form [formGroup]="bookForm">
+
       <!-- Book name -->
       <div class="mb-3">
-        <label for="bookName" class="form-label">Book Name</label>
-        <input type="text" class="form-control" id="bookName" formControlName="bookName">
+        <label for="bookname" class="form-label">Book Name</label>
+        <input type="text" class="form-control" id="bookname" formControlName="bookname"
+        [ngClass]="{
+          'is-valid': bookForm.get('bookname')?.valid && bookForm.get('bookname')?.touched,
+          'is-invalid': bookForm.get('bookname')?.invalid && bookForm.get('bookname')?.touched
+        }"
+        >
+        <div class="invalid-feedback" *ngIf="bookForm.get('bookname')?.invalid && bookForm.get('bookname')?.touched">
+          <div *ngIf="bookForm.get('bookname')?.errors?.['required']">Book Name is required</div>
+          <div *ngIf="bookForm.get('bookname')?.errors?.['minlength']">Increase Text Length is invalid!</div>
+        </div>
       </div>
 
       <div class="mb-3">
         <label for="bookAuthor" class="form-label">Book Author</label>
-        <input type="text" class="form-control" id="bookAuthor" formControlName="bookAuthor">
+        <input type="text" class="form-control" id="bookAuthor" formControlName="bookAuthor"
+        [ngClass]="{
+          'is-valid': bookForm.get('bookAuthor')?.valid && bookForm.get('bookAuthor')?.touched,
+          'is-invalid': bookForm.get('bookAuthor')?.invalid && bookForm.get('bookAuthor')?.touched
+        }"        
+        >
+        <div class="invalid-feedback" *ngIf="bookForm.get('bookAuthor')?.invalid && bookForm.get('bookAuthor')?.touched">
+          <div *ngIf="bookForm.get('bookAuthor')?.errors?.['required']">Book Author Name is Required!</div>
+          <div *ngIf="bookForm.get('bookAuthor')?.errors?.['minlength']">Increase Text Length is invalid!</div>
+        </div>
       </div>
 
       <div class="mb-3">
         <label for="description" class="form-label">Book Description</label>
-        <input type="text" class="form-control" id="description" formControlName="description">
+        <input type="text" class="form-control" id="description" formControlName="description"
+        [ngClass]="{
+          'is-valid': bookForm.get('description')?.valid && bookForm.get('description')?.touched,
+          'is-invalid': bookForm.get('description')?.invalid && bookForm.get('description')?.touched
+        }"
+        >
+        <div class="invalid-feedback" *ngIf="bookForm.get('description')?.invalid && bookForm.get('description')?.touched">
+          <div *ngIf="bookForm.get('description')?.errors?.['required']">Description required</div>
+          <div *ngIf="bookForm.get('description')?.errors?.['minlength']">Increase Text Length is invalid!</div>
+        </div>
       </div>
 
     </form>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
-    <button type="button" class="btn btn-primary">Save changes</button>
+    <button type="button" class="btn btn-primary" *ngIf="!isEdit" (click)="onAddBook()">Save</button>
+    <button type="button" class="btn btn-primary" *ngIf="isEdit" (click)="onEdit()">Edit</button>
   </div>
 </ng-template>

@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChild, TemplateRef } from '@angular/core';
 import { BooksService } from '../../service/books.service';
 import { CommonsettingService } from '../../service/commonsetting.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'; 
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Form, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { validateHeaderName } from 'http';
 
 @Component({
@@ -16,19 +16,25 @@ export class ListBooksComponent implements OnInit, OnDestroy {
 
   @ViewChild('addNewRecord') addNewRecord!: TemplateRef<any>;
   addNewRecordInstence: any;
-
+  bookForm!: FormGroup
   booklist: any[] = [];
   errorMsg!: string;
   showAlert: boolean = false;
+  isEdit:boolean = false;
+
 
   constructor(
     private bookService: BooksService,
     private commonSetting: CommonsettingService,
     private modalService: NgbModal,
-    private fb:FormBuilder
+    private fb: FormBuilder
   ) { }
 
   ngOnInit(): void {
+    // intilize forms in frontend
+    this.formInit();
+
+    // fetch book list from backend
     this.fectchBook();
   }
 
@@ -38,12 +44,24 @@ export class ListBooksComponent implements OnInit, OnDestroy {
 
 
   // Form intilization
-  formInit(){
-    this.fb.group({
-      bookName: ['',[Validators.required, Validators.minLength(8)]],
-      bookAuthor: ['',Validators.required, Validators.minLength(9)],
-      description: ['',[Validators.required, Validators.minLength(50)]]
+  formInit() {
+    this.bookForm = this.fb.group({
+      bookname: ['', [Validators.required, Validators.minLength(8)]],
+      bookAuthor: ['', [Validators.required, Validators.minLength(5)]],
+      description: ['', [Validators.required, Validators.minLength(50)]],
+      id: ['']
     })
+  }
+
+  formPatchValue(book: any) {
+    this.isEdit = true;
+    this.openModal();
+    this.bookForm.patchValue({
+      id: book._id,
+      bookname: book.bookname,
+      bookAuthor: book.bookAuthor,
+      description: book.description
+    });
   }
 
   // Open modal method
@@ -72,6 +90,7 @@ export class ListBooksComponent implements OnInit, OnDestroy {
       const userData = JSON.parse(user);
       this.bookService.getAllBookData(userData.userId).subscribe(
         (res: any) => {
+          console.log(res);
           this.booklist = res;
         },
         (error: any) => {
@@ -80,6 +99,7 @@ export class ListBooksComponent implements OnInit, OnDestroy {
         },
         () => {
           console.log("Observable is completed");
+          this.closeModal();
         }
       );
     }
@@ -94,7 +114,73 @@ export class ListBooksComponent implements OnInit, OnDestroy {
 
   // Trigger modal opening from the button
   onAddBook() {
-    this.openModal();
-    // this.bookService.postBookData()
+    const user = this.commonSetting.getSessionItem('userDetail');
+    if (user) {
+      const userData = JSON.parse(user);
+
+      // Spread bookForm values, then add userId explicitly
+      const postData = {
+        ...this.bookForm.value,
+        userId: userData.userId
+      };
+
+      console.log("post data", postData)
+
+      this.bookService.postBookData(postData).subscribe(
+        (res: any) => {
+          console.log(res);
+          this.errorMsg = res.message;
+        },
+        (error: any) => {
+          console.log(error);
+          this.showAlert = true;
+          this.errorMsg = error;
+        },
+        () => {
+          console.log("Completed observable");
+          this.closeModal();
+        }
+      );
+    }
   }
+
+
+  // Edit book
+  onEdit() {
+    console.log(this.bookForm.value)
+    this.bookService.updateBook(this.bookForm.value.id, this.bookForm.value).subscribe({
+      next: (res) => {
+        this.errorMsg = res.message;
+
+      },
+      error: (error: any) => {
+        console.log(error);
+        this.errorMsg = error;
+      },
+      complete: () => {
+        console.log("Observable is completed.");
+        this.closeModal();
+      }
+    });
+  }
+
+
+  // Delete book
+  Delete(bookId: any) {
+    console.log(bookId);
+    this.bookService.DeleteBook(bookId).subscribe({
+      next: (res:any) => {
+        console.log(res);
+      },
+      error: (error:any) => {
+        console.log(error);
+        this.errorMsg = error;
+      },
+      complete: () => {
+        console.log('Observable is completed');
+      }
+    })
+  }
+
+
 }

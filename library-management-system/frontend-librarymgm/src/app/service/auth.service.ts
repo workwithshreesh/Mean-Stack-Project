@@ -61,6 +61,12 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  // --- Token Methods ---
+
+  getToken(): string | null {
+    return this.commonSetting.getSessionItem(this.tokenKey);
+  }
+
   
 
   private decodeToken(token: string): JwtTokenPayload | null {
@@ -78,7 +84,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    const token = this.commonSetting.getSessionItem(this.tokenKey);
+    const token = this.getToken();
     return token ? !this.isTokenExpired(token) : false;
   }
 

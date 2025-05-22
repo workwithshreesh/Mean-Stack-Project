@@ -4,7 +4,9 @@ const { findByIdAndDelete } = require("../models/user");
 const AddNewBook = async (req,res) =>{
     try{
 
-        const {bookname, description, bookAuthor} = req.body;
+        const {bookname, description, bookAuthor, userId} = req.body;
+
+        console.log("response",req.body)
 
         if(!bookname && !description && !bookAuthor){
             const error = new Error("Bad Request");
@@ -15,12 +17,16 @@ const AddNewBook = async (req,res) =>{
         const addNew = new Books({
             bookAuthor,
             bookname,
-            description
+            description,
+            userId
         });
 
         await addNew.save();
 
-        return res.status(201).json({message:addNew});
+        return res.status(201).json({
+            message:"Book Added Successfully",
+            book:addNew
+        });
 
     }catch (error){
         console.log(error, "error is in add new book func");
@@ -51,7 +57,7 @@ const UpdateBook = async (req,res) => {
             throw error;
         }
 
-        return res.status(200).json({message:updateBook})
+        return res.status(200).json({message:`${bookname} is updated`})
 
     }catch (error){
         console.log(error, "error in update func");
@@ -74,10 +80,10 @@ const DeleteBook = async (req,res) => {
 
         const book = await Books.findByIdAndDelete(Id)
         if(!book){
-            return res.status(404).json({message:"book is deleted"});
+            return res.status(404).json({message:`${bookname} is not avilable`});
         }
 
-        return res.status(200).json({message:book});
+        return res.status(200).json({message:`${book.bookname} is deleted`});
 
     }catch (error){
         console.log(error, "error in delete book");
@@ -122,8 +128,7 @@ const getBookById = async (req,res) => {
             throw error;
         }
 
-        const book = await Books.findById(Id);
-        console.log(book)
+        const book = await Books.find({userId: Id});
 
         if(!book){
             const error = new Error("Book is not found");
@@ -131,7 +136,7 @@ const getBookById = async (req,res) => {
             throw error;
         }
 
-        return res.status(200).json({message:book});
+        return res.status(200).json(book);
 
 
     }catch (error){
