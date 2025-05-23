@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 import { CommonModule } from '@angular/common';
+import { CommonsettingService } from '../../service/commonsetting.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -14,7 +15,8 @@ export class NavBarComponent {
   isAuthenticate:any;
 
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private commonSetting: CommonsettingService
   ){}
 
 
@@ -25,6 +27,7 @@ export class NavBarComponent {
 
   onLogout(){
     this.authService.logout();
+    this.commonSetting.sweetInfo('User is logout')
   }
 
 }

@@ -1,9 +1,13 @@
-import { Injectable } from '@angular/core';
+import { effect, Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainServiceService {
 
-  constructor() { }
+  bookData = signal<Object | null>(null);
+
+  constructor() {}
+
+
 }

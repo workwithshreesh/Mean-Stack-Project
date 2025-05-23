@@ -1,4 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect } from '@angular/core';
+import { MainServiceService } from '../../service/main-service.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-read-book',
@@ -8,10 +10,25 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 })
 export class ReadBookComponent implements OnInit, OnDestroy {
 
-  constructor(){}
+  readBook:any;
+
+  constructor(
+    private mainService: MainServiceService,
+    private router: Router
+  ){
+
+    // track effect of signals
+    this.readBook = this.mainService.bookData();
+    effect(() => {
+      if(!this.readBook){
+        this.router.navigate(['/list-book']);
+      }
+    });
+
+  }
 
   ngOnInit(): void {
-
+    
   }
 
 

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './component/home/home.component';
 import { PathNotFoundComponent } from './component/path-not-found/path-not-found.component';
+import { authGuard } from './AuthGurds/auth.guard';
 
 export const routes: Routes = [
     {
@@ -9,6 +10,7 @@ export const routes: Routes = [
     },
     {
         path:'',
+        canActivate: [authGuard],
         loadChildren: () => 
             import('./library/library.module').then(m => m.LibraryModule)
     },

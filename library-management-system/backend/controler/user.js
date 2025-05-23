@@ -91,7 +91,7 @@ const HandleLogin = async (req,res) => {
 
         const token = jwt.sign({"userId":user._id}, JWT_SECRET,{expiresIn: "1h"});
 
-        return res.status(200).json({token:token});
+        return res.status(200).json({message:"User Login Successfully",token:token});
 
     } catch (error){
         console.error("Error in register:", error.message);

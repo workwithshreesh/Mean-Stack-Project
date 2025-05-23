@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../service/auth.service';
 import { Router } from '@angular/router';
+import { CommonsettingService } from '../../service/commonsetting.service';
 
 @Component({
   selector: 'app-register',
@@ -18,7 +19,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private commonSetting: CommonsettingService
   ){}
 
   ngOnInit() :void {
@@ -52,21 +54,39 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.authService.register(this.registerForm.value).subscribe(
       (res:any)=> {
         this.showAlert = true;
-        this.errorMsg = res.error || "User has been successfully registered"
-
+        this.errorMsg = res.message || "User has been successfully registered"
+        this.commonSetting.sweetSuccsess(this.errorMsg);
         setTimeout(()=>{
           this.router.navigate(['/login']);
         },2000);
-
       },
       (error:any)=> {
         this.showAlert = true;
         this.errorMsg = error || "Something went wrong";
+        this.commonSetting.sweetError(this.errorMsg);
       },
       ()=>{
-        console.log("Observable is completed")
+        console.log("Observable is completed");
       }
     )
   }
+
+
+  canDeactivate(): Promise<boolean> {
+  if (this.registerForm.dirty) {
+    return this.commonSetting.question('The detail is not saved')
+      .then(result => {
+        if (result.isConfirmed) {
+          this.commonSetting.sweetSuccsess('You chose to continue');
+          return true;
+        } else {
+          this.commonSetting.sweetInfo('You canceled the operation');
+          return false;
+        }
+      });
+  }
+  return Promise.resolve(true); 
+}
+
 
 }

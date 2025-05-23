@@ -5,6 +5,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { Form, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { validateHeaderName } from 'http';
+import { Router, RouterLink } from '@angular/router';
+import { MainServiceService } from '../../service/main-service.service';
 
 @Component({
   selector: 'app-list-books',
@@ -27,7 +29,9 @@ export class ListBooksComponent implements OnInit, OnDestroy {
     private bookService: BooksService,
     private commonSetting: CommonsettingService,
     private modalService: NgbModal,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private mainService: MainServiceService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -128,13 +132,11 @@ export class ListBooksComponent implements OnInit, OnDestroy {
 
       this.bookService.postBookData(postData).subscribe(
         (res: any) => {
-          console.log(res);
-          this.errorMsg = res.message;
+          this.commonSetting.sweetSuccsess(res.message);
+          this.fectchBook();
         },
         (error: any) => {
-          console.log(error);
-          this.showAlert = true;
-          this.errorMsg = error;
+          this.commonSetting.toasterError(error)
         },
         () => {
           console.log("Completed observable");
@@ -150,12 +152,11 @@ export class ListBooksComponent implements OnInit, OnDestroy {
     console.log(this.bookForm.value)
     this.bookService.updateBook(this.bookForm.value.id, this.bookForm.value).subscribe({
       next: (res) => {
-        this.errorMsg = res.message;
-
+        this.commonSetting.toasterSuccess(res.message);
+        this.fectchBook();
       },
       error: (error: any) => {
-        console.log(error);
-        this.errorMsg = error;
+        this.commonSetting.toasterError(error)
       },
       complete: () => {
         console.log("Observable is completed.");
@@ -170,16 +171,24 @@ export class ListBooksComponent implements OnInit, OnDestroy {
     console.log(bookId);
     this.bookService.DeleteBook(bookId).subscribe({
       next: (res:any) => {
-        console.log(res);
+        this.commonSetting.sweetSuccsess(res.message);
+        this.fectchBook();
       },
       error: (error:any) => {
         console.log(error);
-        this.errorMsg = error;
+        this.commonSetting.sweetError(error)
       },
       complete: () => {
         console.log('Observable is completed');
       }
     })
+  }
+
+
+  onRead(book:any){
+    console.log(book)
+    this.mainService.bookData.set(book);
+    this.router.navigate(['/read-book']);
   }
 
 

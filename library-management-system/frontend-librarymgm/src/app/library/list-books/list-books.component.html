@@ -18,7 +18,7 @@
         <div class="card-body">
           <h5 class="card-title">{{ post.bookname }}</h5>
           <p class="card-text">{{ post.description | slice:0:70 }}.</p>
-          <a routerLink="read-book" class="btn btn-primary">Go somewhere</a>
+          <a (click)="onRead(post)" class="btn btn-primary">Read Book</a>
         </div>
         <div class="card-footer">
           <button class="btn btn-sm btn-warning me-4" (click)="formPatchValue(post)">Edit</button>

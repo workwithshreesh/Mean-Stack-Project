@@ -3,6 +3,7 @@ import { AuthService } from '../../service/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { routes } from '../../app.routes';
 import { Router } from '@angular/router';
+import { CommonsettingService } from '../../service/commonsetting.service';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +22,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private fb:FormBuilder,
-    private router: Router
+    private router: Router,
+    private commonSetting: CommonsettingService
   ){}
 
   ngOnInit(): void {
@@ -53,12 +55,13 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: (res:any) => {
-        this.router.navigate(['/'])
+        this.router.navigate(['/']);
+        this.commonSetting.toasterSuccess(res.message);
       },
       error: (error:any) => {
         this.showAlert = true;
         this.errorMsg = error || 'Something went wrong';
-        console.log(this.errorMsg)
+        this.commonSetting.toasterError(this.errorMsg);
       },
       complete: () => {
         console.log("Observable is completed")
