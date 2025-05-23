@@ -94,7 +94,6 @@ export class ListBooksComponent implements OnInit, OnDestroy {
       const userData = JSON.parse(user);
       this.bookService.getAllBookData(userData.userId).subscribe(
         (res: any) => {
-          console.log(res);
           this.booklist = res;
         },
         (error: any) => {

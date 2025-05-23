@@ -7,6 +7,7 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { AuthInterceptor } from './Interceptors/auth.interceptor';
 
 import { ToastrModule } from 'ngx-toastr'
+import { provideAnimations } from '@angular/platform-browser/animations'; // ✅ Import this
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }), 
@@ -15,8 +16,8 @@ export const appConfig: ApplicationConfig = {
     withInterceptors([AuthInterceptor])
   ),
   provideRouter(routes), 
-    provideClientHydration(withEventReplay()),
-  
+  provideClientHydration(withEventReplay()),
+  provideAnimations(),
   importProvidersFrom(
     ToastrModule.forRoot({
       positionClass: 'toast-top-right', // or 'toast-bottom-left', etc.
@@ -24,7 +25,8 @@ export const appConfig: ApplicationConfig = {
       timeOut: 3000, 
       closeButton: true, 
       progressBar: true
-    }),     
+    }),
   )
+  
   ]
 };
