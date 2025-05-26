@@ -1,0 +1,62 @@
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow-lg" style="width: 350px;">
+      <h4 class="text-center mb-3"><strong>Login</strong></h4>
+  
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="alert alert-danger text-center">
+        {{ errorMessage }}
+      </div>
+  
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Email Field -->
+        <div class="mb-3">
+          <label for="text" class="form-label">Username:</label>
+          <input
+            type="username"
+            id="username"
+            class="form-control"
+            formControlName="username"
+          />
+          <small
+            *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+            class="text-danger"
+          >
+            Valid Username is required.
+          </small>
+        </div>
+  
+        <!-- Password Field -->
+        <div class="mb-3">
+          <label for="password" class="form-label">Password:</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            formControlName="password"
+          />
+          <small
+            *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            class="text-danger"
+          >
+            Password is required.
+          </small>
+        </div>
+  
+
+        <button
+          type="submit"
+          class="btn btn-primary w-100"
+          [disabled]="loginForm.invalid"
+        >
+          Login
+        </button>
+      </form>
+  
+      <div class="text-center mt-3">
+        <a routerLink="/auth/register" class="text-primary">
+          Don’t have an account? Register here
+        </a>
+      </div>
+    </div>
+  </div>
+  

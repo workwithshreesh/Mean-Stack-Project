@@ -1,0 +1,117 @@
+<div class="container my-4">
+
+  <!-- Create Group Section -->
+  <div class="mb-3">
+    <input
+      [(ngModel)]="newGroupName"
+      placeholder="New Group Name"
+      class="form-control"
+      type="text"
+      aria-label="New Group Name"
+    />
+  </div>
+
+  <div class="input-group mb-3">
+    <input
+      [(ngModel)]="search"
+      placeholder="Search users by name"
+      class="form-control"
+      type="text"
+      aria-label="Search users"
+    />
+    <button class="btn btn-primary" (click)="onSearch()">Search</button>
+  </div>
+
+  <div *ngIf="users.length" class="mb-3">
+    <p><strong>Select users to add:</strong></p>
+    <ul class="list-group">
+      <li *ngFor="let user of users" class="list-group-item d-flex justify-content-between align-items-center">
+        {{ user.username }} <small class="text-muted">({{ user._id }})</small>
+        <button class="btn btn-sm btn-outline-success" (click)="addUserToNewGroup(user)">Add</button>
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="newGroupMembers.length" class="mb-3">
+    <p><strong>Selected Members:</strong></p>
+    <ul class="list-group list-group-horizontal flex-wrap">
+      <li *ngFor="let member of newGroupMembers" class="list-group-item me-2 mb-2">
+        {{ member }}
+      </li>
+    </ul>
+  </div>
+
+  <div class="mb-4">
+    <button class="btn btn-success" (click)="createGroup()" [disabled]="!newGroupName || newGroupMembers.length === 0">
+      Create Group
+    </button>
+  </div>
+
+  <hr />
+
+  <!-- List of Created Groups -->
+  <div *ngIf="groups.length" class="mb-4">
+    <h3>Your Groups</h3>
+    <ul class="list-group">
+      <li *ngFor="let group of groups" class="list-group-item d-flex justify-content-between align-items-center">
+        {{ group.name }}
+        <button class="btn btn-primary btn-sm" (click)="selectGroup(group)">Start Chat</button>
+      </li>
+    </ul>
+  </div>
+
+  <hr />
+
+  <!-- Chat Messages of Selected Group -->
+  <div *ngIf="selectedGroup">
+    <h4>Chat: {{ selectedGroup.name }}</h4>
+
+    <div
+      class="border rounded p-3 mb-3"
+      style="height: 300px; overflow-y: auto; background-color: #f8f9fa;"
+    >
+      <div *ngFor="let msg of messages" class="mb-2">
+        <strong>{{ msg.sender.username || msg.sender }}:</strong> {{ msg.text }}
+      </div>
+    </div>
+
+    <div class="input-group mb-3">
+      <input
+        [(ngModel)]="newMessageText"
+        placeholder="Type your message"
+        class="form-control"
+        type="text"
+        aria-label="Message input"
+        (keyup.enter)="sendMessage()"
+      />
+      <button class="btn btn-primary" (click)="sendMessage()" [disabled]="!newMessageText.trim()">
+        Send
+      </button>
+    </div>
+
+    <!-- Remove Members Section -->
+    <!-- <div class="mt-5">
+      <h5>Remove Members</h5>
+      <p>Select members to remove from group:</p>
+      <ul class="list-group mb-3">
+        <li
+          *ngFor="let member of selectedGroup.members"
+          (click)="toggleRemoveMember(member)"
+          [class.list-group-item-primary]="isSelectedForRemoval(member)"
+          class="list-group-item d-flex justify-content-between align-items-center"
+          style="cursor: pointer;"
+        >
+          {{ member.username || member }}
+          <span *ngIf="isSelectedForRemoval(member)" class="badge bg-danger rounded-pill">Selected</span>
+        </li>
+      </ul>
+      <button
+        class="btn btn-danger"
+        (click)="removeSelectedMembers()"
+        [disabled]="!membersToRemove.length"
+      >
+        Remove Selected Members
+      </button>
+    </div> -->
+  </div>
+</div>
