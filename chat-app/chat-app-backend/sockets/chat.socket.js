@@ -1,5 +1,6 @@
-const Message = require('../models/message.model');
-const Group = require('../models/group.model'); // assuming you have this
+const Message = require('../models/onetoone.model');
+const Group = require('../models/group.model'); 
+const User = require('../models/user.model');
 
 const activeUsers = new Map(); // userId -> socketId
 
@@ -25,6 +26,7 @@ module.exports = (io) => {
         io.to(receiverSocketId).emit('receive_private_message', message);
       }
     });
+
 
     // Group message
     socket.on('group_message', async (data) => {
@@ -53,6 +55,23 @@ module.exports = (io) => {
         console.error('Error in group_message:', err);
       }
     });
+
+    // 2. Start chat - send list of users I've chatted with
+      socket.on('chat-started', async (from) => {
+        try {
+    
+          const sent = await Message.find({ sender: from }).distinct('receiver');
+          const received = await Message.find({ receiver: from }).distinct('sender');
+          const userIds = [...new Set([...sent, ...received])];
+    
+          const users = await User.find({ _id: { $in: userIds } }).select('_id username');
+    
+          io.to(socket.id).emit('chat-list', users);
+        } catch (err) {
+          console.error('❌ Error fetching chat list:', err.message);
+        }
+      });    
+
 
     // Disconnect
     socket.on('disconnect', () => {

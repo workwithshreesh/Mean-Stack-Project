@@ -34,4 +34,22 @@ export class SocketService {
     });
   }
 
+  emitChatStarted(userId: string) {
+    this.socket.emit('chat-started', userId);
+  }
+  
+  
+
+  updatedChatList(): Observable<any[]> {
+    return new Observable(observer => {
+      this.socket.on('chat-list', (users) => {
+        observer.next(users); 
+      });
+  
+      return () => {
+        this.socket.off('chat-list');
+      };
+    });
+  }
+  
 }

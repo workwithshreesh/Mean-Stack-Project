@@ -1,7 +1,7 @@
 // controllers/group.controller.js
 const Group = require('../models/group.model');
-const Message = require('../models/message.model');
-const user = require('../models/user.model');
+const Message = require('../models/onetoone.model');
+const User = require('../models/user.model');
 
 // Add member
 exports.addMember = async (req, res) => {
@@ -29,6 +29,28 @@ exports.addMember = async (req, res) => {
       res.status(500).json({ message: err.message });
     }
   };
+
+
+  // Get all member of group
+  exports.getAllMember = async (req, res) => {
+    const { groupId } = req.params;
+    try{
+
+      if(!groupId){
+        return res.status(404).json({message: "Group id is not found"});
+      }
+
+      const group = await Group.findById(groupId).populate(['members','admin']);
+      if (!group) return res.status(404).json({message: "Group is not found"});
+      return res.status(200).json({
+        members: group.members,
+        admin: group.admin
+      });
+
+    } catch(err) {
+      return res.status(500).json({message: err.message})
+    }
+  }
   
   // Remove member
   exports.removeMember = async (req, res) => {

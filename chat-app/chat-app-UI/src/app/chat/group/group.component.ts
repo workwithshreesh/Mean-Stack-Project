@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { SocketService } from '../../service/socket.service';
 import { CommonsettingService } from '../../service/commonsetting.service';
 import { GroupService } from '../../service/group.service';
 import { HttpClient } from '@angular/common/http';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-group',
@@ -18,18 +19,22 @@ export class GroupComponent implements OnInit {
   newGroupName = '';
   newGroupMembers: string[] = [];
   newMessageText = '';
-  currentUserId: any; // TODO: replace with actual logged in user id
+  currentUserId: any;
+  adminId!:string;
   newMemberId = '';
   search = '';
+  groupModalRef:any;
   users: any[] = [];
-  membersToRemove: string[] = [];
+  membersToGroup: any[] = [];
+  @ViewChild('groupMembers') groupMember!: TemplateRef<any>;
 
 
 
   constructor(
     private groupService: GroupService,
     private commonSetting: CommonsettingService,
-    private http: HttpClient
+    private http: HttpClient,
+    private modalService: NgbModal
   ) { }
 
   ngOnInit(): void {
@@ -39,17 +44,18 @@ export class GroupComponent implements OnInit {
       console.log(this.currentUserId)
     } else {
       console.error('User is not logged in');
-      this.currentUserId = null; // or redirect to login or show a message
+      this.currentUserId = null;
     }
-
     this.loadGroups();
   }
+
 
   loadGroups() {
     this.groupService.getUserGroups().subscribe(groups => {
       this.groups = groups;
     });
   }
+
 
   createGroup() {
     if (!this.newGroupName) return alert('Group name is required');
@@ -65,28 +71,33 @@ export class GroupComponent implements OnInit {
   }
   
 
+
   onSearch() {
     if (!this.search) return;
     this.http.get(`http://localhost:5000/api/users/search?username=${this.search}`)
       .subscribe((res: any) => this.users = res);
   }
+
   
   addUserToNewGroup(user: any) {
     if (!this.newGroupMembers.includes(user._id)) {
       this.newGroupMembers.push(user._id);
     }
   }
+
   
   selectGroup(group: any) {
     this.selectedGroup = group;
     this.loadMessages(group._id);
   }
 
+
   loadMessages(groupId: string) {
     this.groupService.getGroupMessages(groupId).subscribe(messages => {
       this.messages = messages;
     });
   }
+
 
   sendMessage() {
     if (!this.newMessageText || !this.selectedGroup) return;
@@ -97,6 +108,7 @@ export class GroupComponent implements OnInit {
       });
   }
 
+
   addMember() {
     if (!this.newMemberId || !this.selectedGroup) return;
     this.groupService.addMember(this.selectedGroup._id, this.newMemberId).subscribe(() => {
@@ -105,26 +117,57 @@ export class GroupComponent implements OnInit {
     });
   }
 
-  toggleRemoveMember(memberId: string) {
-    const index = this.membersToRemove.indexOf(memberId);
-    if (index === -1) {
-      this.membersToRemove.push(memberId);
-    } else {
-      this.membersToRemove.splice(index, 1);
+  getAllMember(group:any, open:string){
+    if(open == 'open'){
+      this.openModal();
     }
+    // const groupId = group._id;
+    this.selectedGroup = group._id;
+    console.log(this.selectedGroup)
+    this.groupService.getGroupMembers(this.selectedGroup).subscribe({
+      next: (res:any) => {
+        console.log(res)
+        this.membersToGroup = res.members;
+        this.adminId = res.admin._id;
+      },
+      error: (error:any) => {
+        console.log(error);
+      }
+    })
   }
-  
-  isSelectedForRemoval(memberId: string): boolean {
-    return this.membersToRemove.includes(memberId);
-  }
-  
 
-  removeMember(memberId: string) {
-    if (!this.selectedGroup) return;
-    this.groupService.removeMember(this.selectedGroup._id, memberId).subscribe(() => {
-      this.loadGroups();
+
+  openModal() {
+    this.groupModalRef = this.modalService.open(this.groupMember, {
+      centered: true,
+      scrollable: true,
+      size: 'lg'
     });
   }
+  
+  
+  closeModal() {
+    if (this.groupModalRef) {
+      this.groupModalRef.close();
+    }
+  }
+    
+
+  removeMember(member: any) {
+    const memberId = member._id;
+    console.log(this.selectedGroup, memberId)
+    if (!this.selectedGroup || !memberId) return;
+    this.groupService.removeMember(this.selectedGroup, memberId).subscribe((res) => {
+      console.log(res)
+      this.loadGroups();
+      this.getAllMember(this.selectedGroup,'close');
+    },
+    (error:any) => {
+      console.log(error);
+    }
+  );
+  }
+  
 
 //   removeSelectedMembers() {
 //   if (!this.selectedGroup || this.membersToRemove.length === 0) return;

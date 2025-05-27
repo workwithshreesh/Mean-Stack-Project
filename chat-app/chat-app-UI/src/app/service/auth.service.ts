@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { CommonsettingService } from './commonsetting.service';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'

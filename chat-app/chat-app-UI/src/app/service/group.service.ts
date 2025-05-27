@@ -34,11 +34,16 @@ export class GroupService {
     return this.http.get<Group[]>(`${this.baseUrl}/groups`);
   }
 
+  getGroupMembers(groupId: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/groups/${groupId}/members`)
+  }
+
   addMember(groupId: string, memberId: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/groups/${groupId}/members`, { memberId });
   }
 
   removeMember(groupId: string, memberId: string): Observable<any> {
+    console.log("remove",groupId)
     return this.http.delete(`${this.baseUrl}/groups/${groupId}/members`, { body: { memberId } });
   }
 

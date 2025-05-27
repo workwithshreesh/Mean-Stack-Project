@@ -51,7 +51,7 @@ export class LoginComponent {
       },
       error: (err:any) => {
         console.error("Login error:", err);
-        this.errorMessage = err || 'Login failed. Try again.';
+        this.errorMessage =  'Login failed. Try again.';
       }
     });
   }

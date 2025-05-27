@@ -16,6 +16,7 @@ export class OneToOneComponent implements OnInit {
   search = '';
   selectedUser: any;
   currentUser: any;
+  chattedUsers:any;
 
   constructor(
     private http: HttpClient,
@@ -27,6 +28,11 @@ export class OneToOneComponent implements OnInit {
     this.currentUser = JSON.parse(this.commonSetting.getSessionItem('auth')!);
     this.socketService.register(this.currentUser.id);
 
+    this.socketService.emitChatStarted(this.currentUser.id);
+    this.socketService.updatedChatList().subscribe(users => {
+      this.chattedUsers = users;
+    });
+
     this.socketService.receivePrivateMessages().subscribe(msg => {
       if (msg.sender === this.selectedUser?._id || msg.receiver === this.selectedUser?._id) {
         this.messages.push(msg);
@@ -35,9 +41,18 @@ export class OneToOneComponent implements OnInit {
   }
 
   onSearch() {
+    if (!this.search || this.search.trim() === '') {
+      this.users = [];
+      return;
+    }
+  
     this.http.get(`http://localhost:5000/api/users/search?username=${this.search}`)
-      .subscribe((res: any) => this.users = res);
+      .subscribe((res: any) => {
+        this.users = res;
+        this.users = this.users.filter(user => user._id !== this.currentUser.id);
+      });
   }
+  
 
   selectUser(user: any) {
     this.selectedUser = user;
@@ -57,5 +72,10 @@ export class OneToOneComponent implements OnInit {
     this.messages.push(msg);
     this.message = '';
   }
+
+  
+  
+
+
 }
 

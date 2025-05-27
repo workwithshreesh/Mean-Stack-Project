@@ -5,6 +5,7 @@ import { ChatRoutingModule } from './chat-routing.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { OneToOneComponent } from './one-to-one/one-to-one.component';
 import { GroupComponent } from './group/group.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { GroupComponent } from './group/group.component';
     CommonModule,
     ChatRoutingModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    NgbModule
   ]
 })
 export class ChatModule { }

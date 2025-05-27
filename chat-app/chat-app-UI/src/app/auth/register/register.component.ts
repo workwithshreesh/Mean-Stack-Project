@@ -43,7 +43,7 @@ export class RegisterComponent {
         setTimeout(() => this.router.navigate(['/auth/login']), 1500);
       },
       error: (err) => {
-        this.errorMessage = err?.error?.message || 'Registration failed. Try again.';
+        this.errorMessage = 'Registration failed. Try again.';
       }
     });
   }

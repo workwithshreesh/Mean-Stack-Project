@@ -1,5 +1,5 @@
 // controllers/message.controller.js
-const Message = require('../models/message.model');
+const Message = require('../models/onetoone.model');
 const User = require('../models/user.model');
 
 // Send a message (direct or group)
@@ -13,8 +13,8 @@ exports.sendMessage = async (req, res) => {
 
     const message = new Message({
       sender,
-      receiver: receiver || null,
-      group: group || null,
+      receiver: receiver,
+      group: group ,
       text,
     });
 
@@ -43,15 +43,26 @@ exports.getMessages = async (req, res) => {
   }
 };
 
-// Get messages of a group
-exports.getGroupMessages = async (req, res) => {
+// Get all user whom i started  chat
+exports.getChattedUsers = async (req, res) => {
   try {
-    const { group } = req.params;
+    const { userId } = req.query;
 
-    const messages = await Message.find({ group }).sort({ createdAt: 1 });
+    if (!userId) return res.status(400).json({ error: 'User ID is required' });
 
-    res.status(200).json(messages);
+    // Find distinct user IDs the current user has chatted with
+    const sentMessages = await Message.find({ sender: userId, receiver: { $ne: null } }).distinct('receiver');
+    const receivedMessages = await Message.find({ receiver: userId }).distinct('sender');
+
+    // Merge and remove duplicates
+    const uniqueUserIds = [...new Set([...sentMessages, ...receivedMessages])];
+
+    // Populate user details if needed
+    const users = await User.find({ _id: { $in: uniqueUserIds } }).select('_id username email');
+
+    res.status(200).json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+

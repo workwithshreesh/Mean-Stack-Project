@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
 import { CommonModule } from '@angular/common';
+import { ThemeService } from '../../service/theme.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -15,6 +16,7 @@ export class NavBarComponent {
 
   constructor(
     private authService: AuthService,
+    public themeService: ThemeService
   ){}
 
 
@@ -26,6 +28,16 @@ export class NavBarComponent {
   onLogout(){
     this.authService.logout();
   }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
+  }
+
+  isDark(): boolean {
+    return this.themeService.getTheme() === 'dark';
+  }
+
+  
 
 
 }

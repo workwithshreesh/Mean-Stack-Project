@@ -10,4 +10,11 @@ import { NavBarComponent } from './Layouts/nav-bar/nav-bar.component';
 })
 export class AppComponent {
   title = 'chat-app-UI';
+  isDarkMode = false;
+
+  toggleTheme(): void {
+    document.body.classList.toggle('dark-theme');
+  }
+  
+
 }

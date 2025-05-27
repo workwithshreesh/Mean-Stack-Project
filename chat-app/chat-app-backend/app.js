@@ -8,7 +8,7 @@ const socketIO = require('socket.io');
 
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
-const messageRoutes = require('./routes/message.routes');
+const messageRoutes = require('./routes/onetoone.routes');
 const chatSocket = require('./sockets/chat.socket');
 const groupRoutes = require('./routes/group.routes');
 
