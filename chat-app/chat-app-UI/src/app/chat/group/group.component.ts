@@ -4,6 +4,7 @@ import { CommonsettingService } from '../../service/commonsetting.service';
 import { GroupService } from '../../service/group.service';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-group',
@@ -16,158 +17,169 @@ export class GroupComponent implements OnInit {
   groups: any[] = [];
   selectedGroup: any = null;
   messages: any[] = [];
+
   newGroupName = '';
   newGroupMembers: string[] = [];
   newMessageText = '';
-  currentUserId: any;
-  adminId!:string;
   newMemberId = '';
   search = '';
-  groupModalRef:any;
   users: any[] = [];
   membersToGroup: any[] = [];
+
+  currentUserId: any;
+  userData:any;
+  adminId!: string;
+  messageSub!: Subscription;
+  groupModalRef: any;
+
   @ViewChild('groupMembers') groupMember!: TemplateRef<any>;
 
-
-
   constructor(
+    private http: HttpClient,
     private groupService: GroupService,
     private commonSetting: CommonsettingService,
-    private http: HttpClient,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) { }
 
   ngOnInit(): void {
     const userData = this.commonSetting.getSessionItem('auth');
     if (userData) {
+      this.userData = userData;
+      console.log("chr",JSON.parse(this.userData).username)
       this.currentUserId = JSON.parse(userData).id;
-      console.log(this.currentUserId)
     } else {
-      console.error('User is not logged in');
-      this.currentUserId = null;
+      console.error('User not logged in');
+      return;
     }
+    this.groupService.onAny((event, ...args) => {
+    });
+    
+    console.log('this.currentUserId',this.currentUserId)
+    this.groupService.register(this.currentUserId);
     this.loadGroups();
   }
 
-
-  loadGroups() {
-    this.groupService.getUserGroups().subscribe(groups => {
-      this.groups = groups;
-    });
+  ngOnDestroy(): void {
+    if (this.messageSub) {
+      this.messageSub.unsubscribe();
+    }
   }
 
-
-  createGroup() {
-    if (!this.newGroupName) return alert('Group name is required');
-    if (this.newGroupMembers.length === 0) return alert('Add at least one member');
-    console.log(this.currentUserId)
-    this.groupService.createGroup(this.newGroupName, this.newGroupMembers, this.currentUserId).subscribe(() => {
-      this.newGroupName = '';
-      this.newGroupMembers = [];
-      this.search = '';
-      this.users = [];
-      this.loadGroups();
-    });
-  }
-  
-
-
-  onSearch() {
-    if (!this.search) return;
+  onSearch(): void {
+    if (!this.search.trim()) return;
     this.http.get(`http://localhost:5000/api/users/search?username=${this.search}`)
       .subscribe((res: any) => this.users = res);
   }
 
-  
-  addUserToNewGroup(user: any) {
+
+  addUserToNewGroup(user: any): void {
     if (!this.newGroupMembers.includes(user._id)) {
       this.newGroupMembers.push(user._id);
     }
   }
 
-  
-  selectGroup(group: any) {
-    this.selectedGroup = group;
-    this.loadMessages(group._id);
-  }
-
-
-  loadMessages(groupId: string) {
-    this.groupService.getGroupMessages(groupId).subscribe(messages => {
-      this.messages = messages;
+  createGroup(): void {
+    this.groupService.createGroup(this.newGroupName, this.newGroupMembers, this.currentUserId);
+    this.groupService.createdGroupDetail().subscribe((res: any) => {
+      this.groups.push(res.group);
+      this.newGroupName = '';
+      this.newGroupMembers = [];
     });
   }
 
-
-  sendMessage() {
-    if (!this.newMessageText || !this.selectedGroup) return;
-    this.groupService.sendGroupMessage(this.selectedGroup._id, this.currentUserId, this.newMessageText)
-      .subscribe(() => {
-        this.newMessageText = '';
-        this.loadMessages(this.selectedGroup._id);
-      });
+  loadGroups(): void {
+    this.groupService.getUserGroups().subscribe((groups) => {
+      this.groups = groups;
+    });
   }
 
+  selectGroup(group: any): void {
+    if (this.messageSub) this.messageSub.unsubscribe();  // 🧹 Cleanup
+  
+    this.selectedGroup = group;
+    this.messages = [];
+  
+    this.groupService.getGroupMessage(group._id);  // Emit to server to get history
+  
+    this.groupService.getGroupMessageRecived(group._id).subscribe(res => {
+      this.messages = res;
+    });
+  
+    // Listen to new incoming messages via socket stream
+    this.messageSub = this.groupService.receiveGroupMessages(group._id).subscribe((msg:any) => {
+      this.messages.push(msg);
+    });
+  }
+  
 
-  addMember() {
+  sendMessage(): void {
+    if (!this.newMessageText.trim() || !this.selectedGroup) return;
+  
+    const text = this.newMessageText.trim();
+    const groupId = this.selectedGroup._id;
+    const senderId = this.currentUserId;
+  
+    // Push message to local UI immediately
+    this.messages.push({
+      sender: { _id: senderId, username: JSON.parse(this.userData).username },  // Optional: adjust as per real data
+      text: text
+    });
+  
+    // Emit to socket
+    this.groupService.sendGroupMessages(groupId, senderId, text);
+  
+    this.newMessageText = '';
+  }
+  
+
+
+  addMember(): void {
     if (!this.newMemberId || !this.selectedGroup) return;
+    
     this.groupService.addMember(this.selectedGroup._id, this.newMemberId).subscribe(() => {
       this.newMemberId = '';
       this.loadGroups();
     });
   }
 
-  getAllMember(group:any, open:string){
-    if(open == 'open'){
-      this.openModal();
-    }
-    // const groupId = group._id;
+  getAllMember(group: any, open: string): void {
+    if (open === 'open') this.openModal();
     this.selectedGroup = group._id;
-    console.log(this.selectedGroup)
+
     this.groupService.getGroupMembers(this.selectedGroup).subscribe({
-      next: (res:any) => {
-        console.log(res)
+      next: (res: any) => {
         this.membersToGroup = res.members;
         this.adminId = res.admin._id;
       },
-      error: (error:any) => {
-        console.log(error);
-      }
-    })
+      error: (error: any) => console.error(error)
+    });
   }
 
-
-  openModal() {
+  openModal(): void {
     this.groupModalRef = this.modalService.open(this.groupMember, {
       centered: true,
       scrollable: true,
       size: 'lg'
     });
   }
-  
-  
-  closeModal() {
-    if (this.groupModalRef) {
-      this.groupModalRef.close();
-    }
-  }
-    
 
-  removeMember(member: any) {
-    const memberId = member._id;
-    console.log(this.selectedGroup, memberId)
-    if (!this.selectedGroup || !memberId) return;
-    this.groupService.removeMember(this.selectedGroup, memberId).subscribe((res) => {
-      console.log(res)
-      this.loadGroups();
-      this.getAllMember(this.selectedGroup,'close');
-    },
-    (error:any) => {
-      console.log(error);
-    }
-  );
+  closeModal(): void {
+    if (this.groupModalRef) this.groupModalRef.close();
   }
-  
+
+  removeMember(member: any): void {
+    const memberId = member._id;
+    if (!this.selectedGroup || !memberId) return;
+
+    this.groupService.removeMember(this.selectedGroup, memberId).subscribe({
+      next: () => {
+        this.loadGroups();
+        this.getAllMember({ _id: this.selectedGroup }, 'close');
+      },
+      error: (error: any) => console.error(error)
+    });
+  }
+
 
 //   removeSelectedMembers() {
 //   if (!this.selectedGroup || this.membersToRemove.length === 0) return;

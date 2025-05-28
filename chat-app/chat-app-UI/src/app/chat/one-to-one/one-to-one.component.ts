@@ -64,10 +64,11 @@ export class OneToOneComponent implements OnInit {
 
   send() {
     const msg = {  
-      sender: this.currentUser.token.id,
+      sender: this.currentUser.id,
       receiver: this.selectedUser._id,
       text: this.message,
     };
+    console.log("message",msg)
     this.socketService.sendPrivateMessage(msg);
     this.messages.push(msg);
     this.message = '';

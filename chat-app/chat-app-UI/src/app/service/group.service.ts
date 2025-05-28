@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { io, Socket } from 'socket.io-client';
 
 interface Group {
   _id: string;
@@ -16,18 +17,72 @@ interface Message {
   createdAt: string;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GroupService {
+  private baseUrl = 'http://localhost:5000/api';
+  private socket: Socket = io('http://localhost:5000');
 
-  private baseUrl = 'http://localhost:5000/api'; // backend API base URL
+  private messageSubjects: Map<string, Subject<Message>> = new Map();
 
   constructor(private http: HttpClient) {}
 
-  createGroup(name: string, members: string[], userId:string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/groups/${userId}`, { name, members });
+  register(userId: string) {
+    console.log('resgister',userId)
+    this.socket.emit('register', userId);
+  }
+
+  onAny(listener: (event: string, ...args: any[]) => void): void {
+    this.socket.onAny(listener);
+  }
+
+
+  createGroup(name: string, members: string[], adminId: string) {
+    this.socket.emit('create_group', { name, members, adminId });
+  }
+
+  createdGroupDetail(): Observable<any> {
+    return new Observable(observer => {
+      const handler = (msg: any) => observer.next(msg);
+      this.socket.on('group_created', handler);
+      return () => this.socket.off('group_created', handler);
+    });
+  }
+
+  receiveGroupMessages(groupId: string): Observable<any> {
+    return new Observable(observer => {
+      const eventName = `receive_group_message_${groupId}`;
+      this.socket.on(eventName, (msg) => observer.next(msg));
+  
+      // Cleanup on unsubscribe
+      return () => {
+        this.socket.off(eventName);
+      };
+    });
+  }
+  
+  sendGroupMessage(data: any) {
+    this.socket.emit('send_group_message', data);
+  }
+  
+
+  sendGroupMessages(groupId: string, senderId: string, text: string): void {
+    this.socket.emit('send_group_message', { groupId, senderId, text });
+  }
+
+  getGroupMessage(groupId: string): void {
+    this.socket.emit('get_group_messages', { groupId });
+  }
+
+  getGroupMessageRecived(groupId: string): Observable<Message[]> {
+    return new Observable(observer => {
+      const handler = (messages: Message[]) => {
+        observer.next(messages);
+      };
+      this.socket.on(`group_messages_${groupId}`, handler);
+      return () => this.socket.off(`group_messages_${groupId}`, handler);
+    });
   }
 
   getUserGroups(): Observable<Group[]> {
@@ -35,7 +90,7 @@ export class GroupService {
   }
 
   getGroupMembers(groupId: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/groups/${groupId}/members`)
+    return this.http.get<any>(`${this.baseUrl}/groups/${groupId}/members`);
   }
 
   addMember(groupId: string, memberId: string): Observable<any> {
@@ -43,16 +98,10 @@ export class GroupService {
   }
 
   removeMember(groupId: string, memberId: string): Observable<any> {
-    console.log("remove",groupId)
-    return this.http.delete(`${this.baseUrl}/groups/${groupId}/members`, { body: { memberId } });
+    return this.http.delete(`${this.baseUrl}/groups/${groupId}/members`, {
+      body: { memberId },
+    });
   }
 
-  getGroupMessages(groupId: string): Observable<Message[]> {
-    return this.http.get<Message[]>(`${this.baseUrl}/groups/${groupId}/messages`);
-  }
-
-  sendGroupMessage(groupId: string, sender: string, text: string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/groups/${groupId}/messages`, { sender, text });
-  }
 
 }

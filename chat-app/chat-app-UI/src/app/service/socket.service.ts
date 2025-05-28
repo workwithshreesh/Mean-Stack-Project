@@ -24,15 +24,6 @@ export class SocketService {
     });
   }
 
-  sendGroupMessage(data: any) {
-    this.socket.emit('group_message', data);
-  }
-
-  receiveGroupMessages(groupId: string): Observable<any> {
-    return new Observable(observer => {
-      this.socket.on(`receive_group_message_${groupId}`, msg => observer.next(msg));
-    });
-  }
 
   emitChatStarted(userId: string) {
     this.socket.emit('chat-started', userId);
