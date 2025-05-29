@@ -1,0 +1,31 @@
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+  }
+  
+  [data-theme='dark'] {
+    --bg-color: #121212;
+    --text-color: #ffffff;
+  }
+  
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+  
+  .btn {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+  }
+  
+
+  body.light-theme {
+    background-color: #fff;
+    color: #000;
+  }
+  
+  body.dark-theme {
+    background-color: #121212;
+    color: #fff;
+  }
+  

@@ -1,0 +1,22 @@
+/* You can add global styles to this file, and also import other style files */
+/* Default Light Theme (Bootstrap default) */
+:root {
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #212529;
+  }
+  
+  /* Dark Theme overrides */
+  body.dark-theme {
+    --bs-body-bg: #121212;
+    --bs-body-color: #f1f1f1;
+    --bs-border-color: #2c2c2c;
+    --bs-card-bg: #1e1e1e;
+    --bs-card-color: #e1e1e1;
+  }
+  
+  /* Apply background and text */
+  body {
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+  }
+  
