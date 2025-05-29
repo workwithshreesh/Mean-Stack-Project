@@ -1,23 +1,36 @@
 const redis = require('../redis/redisClient');
 
-async function getCache(key){
-    const data = await redis.get(key);
-    if (!data) return null;
-    return JSON.parse(data);
-}
-
-
-async function setCache(key, value, expiryInSec = 6000){
-    await redis.set(key, JSON.stringify(value), expiryInSec);
-}
-
-async function delCache(key) {
-    await redis.del(key);
-}
-
-
-module.exports = {
+// GET cache
+const getCache = async (key) => {
+    try {
+      const data = await redis.get(key);
+      return data;
+    } catch (err) {
+      console.error("Redis GET Error:", err);
+      return null;
+    }
+  };
+  
+  // SET cache with expiration
+  const setCache = async (key, value, ttl = 3600) => {
+    try {
+      await redis.set(key, JSON.stringify(value), 'EX', ttl);
+    } catch (err) {
+      console.error("Redis SET Error:", err);
+    }
+  };
+  
+  // DELETE cache
+  const delCache = async (key) => {
+    try {
+      await redis.del(key);
+    } catch (err) {
+      console.error("Redis DEL Error:", err);
+    }
+  };
+  
+  module.exports = {
     getCache,
     setCache,
     delCache
-}
+  };
