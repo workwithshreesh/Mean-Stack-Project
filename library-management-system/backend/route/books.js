@@ -15,5 +15,4 @@ Router.delete("/book/:id",authenticateUser,DeleteBook);
 Router.get("/book",GetAllBook);
 Router.get("/book/:id",authenticateUser,getBookById);
 
-
 module.exports = Router;

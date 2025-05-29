@@ -1,18 +1,19 @@
 const Books = require("../models/books");
-const { findByIdAndDelete } = require("../models/user");
+const { getCache, setCache, delCache } = require("../middlewares/cacheHelpers");
 
 const AddNewBook = async (req,res) =>{
     try{
 
         const {bookname, description, bookAuthor, userId} = req.body;
 
-        console.log("response",req.body)
-
         if(!bookname && !description && !bookAuthor){
             const error = new Error("Bad Request");
             error.statusCode = 409;
             throw error;
         }
+
+        const cacheKey = `book:user:${userId}`;
+        await delCache(cacheKey)
 
         const addNew = new Books({
             bookAuthor,
@@ -49,6 +50,7 @@ const UpdateBook = async (req,res) => {
         if (bookname) updatedData.bookname = bookname;
         if (description) updatedData.description = description;
 
+        
         const updateBook = await Books.findByIdAndUpdate(Id, updatedData, {new: true});
 
         if(!updateBook){
@@ -56,6 +58,9 @@ const UpdateBook = async (req,res) => {
             error.statusCode = 409;
             throw error;
         }
+
+        const cacheKey = `book:user:${updateBook.userId}`;
+        await delCache(cacheKey);
 
         return res.status(200).json({message:`${bookname} is updated`})
 
@@ -78,10 +83,13 @@ const DeleteBook = async (req,res) => {
             throw error
         }
 
-        const book = await Books.findByIdAndDelete(Id)
+        const book = await Books.findByIdAndDelete(Id);
         if(!book){
             return res.status(404).json({message:`${bookname} is not avilable`});
         }
+
+        const cacheKey = `book:user:${book.userId}`;
+        await delCache(cacheKey);
 
         return res.status(200).json({message:`${book.bookname} is deleted`});
 
@@ -121,6 +129,13 @@ const getBookById = async (req,res) => {
     try{
 
         const Id = req.params.id;
+        const cacheKey = `book:user:${Id}`;
+
+        // fetch data from redis if avilable
+        const cachedData = await getCache(cacheKey);
+        if(cachedData){
+            return res.status(200).json(JSON.parse(cachedData));
+        }
 
         if(!Id){
             const error = new Error("Id is not provided");
@@ -129,6 +144,7 @@ const getBookById = async (req,res) => {
         }
 
         const book = await Books.find({userId: Id});
+        await setCache(cacheKey, book);
 
         if(!book){
             const error = new Error("Book is not found");
