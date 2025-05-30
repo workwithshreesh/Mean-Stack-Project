@@ -1,12 +1,13 @@
 const express = require("express");
 const {HandleLogin,
-    HandleRegister} = require("../controler/user");
+    HandleRegister, HandleLogout} = require("../controler/user");
 
 
 const Router = express.Router();
 
 Router.post("/register",HandleRegister);
 Router.post("/login",HandleLogin);
+Router.post("/logout", HandleLogout)
 
 
-module.exports = Router
+module.exports = Router;

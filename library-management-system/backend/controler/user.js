@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { getCache, setCache, delCache } = require("../middlewares/cacheHelpers");
 
 
 const HandleRegister = async (req,res) =>{
@@ -8,7 +9,7 @@ const HandleRegister = async (req,res) =>{
 
         const {username, fullName, password, email} = req.body;
 
-        if(!username, !fullName, !password, !email){
+        if(!username || !fullName || !password || !email){
             const error = new Error("Bad Request");
             error.statusCode = 500;
             throw error;
@@ -91,6 +92,11 @@ const HandleLogin = async (req,res) => {
 
         const token = jwt.sign({"userId":user._id}, JWT_SECRET,{expiresIn: "1h"});
 
+        console.log(user._id.toString())
+
+        // redis setup for login
+        await setCache(`session:${user._id}`, token);
+
         return res.status(200).json({message:"User Login Successfully",token:token});
 
     } catch (error){
@@ -104,7 +110,30 @@ const HandleLogin = async (req,res) => {
 }
 
 
+
+const HandleLogout = async (req, res) => {
+    try{
+
+        const token = req.header('Authorization').replace('Bearer ', "");
+        if(!token) {
+            return res.status(401).json({message: 'Token is not found'});
+        }
+
+        const decoded = jwt.verify(token, 'librarymgm');
+
+        // delete the session token from redis
+        await delCache(`session:${decoded.userId}`);
+
+        return res.status(200).json({ message: "Logged out successfull" });
+
+    } catch(error) {
+        return res.status(500).json({ message: `Logout failed ${error}` });
+    }
+}
+
+
 module.exports = {
     HandleLogin,
-    HandleRegister
+    HandleRegister,
+    HandleLogout
 }

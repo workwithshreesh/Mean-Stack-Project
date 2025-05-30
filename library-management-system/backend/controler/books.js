@@ -134,6 +134,7 @@ const getBookById = async (req,res) => {
         // fetch data from redis if avilable
         const cachedData = await getCache(cacheKey);
         if(cachedData){
+            console.log('cached data', cachedData)
             return res.status(200).json(JSON.parse(cachedData));
         }
 

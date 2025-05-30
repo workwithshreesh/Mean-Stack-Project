@@ -5,6 +5,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { CommonsettingService } from './commonsetting.service';
+import { WebSocketService } from './web-socket.service';
 
 interface JwtTokenPayload {
   exp: number;
@@ -26,7 +27,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private commonSetting: CommonsettingService
+    private commonSetting: CommonsettingService,
+    private WebSocketService: WebSocketService
   ) {
     const token = this.commonSetting.getSessionItem(this.tokenKey);
     const user = token ? this.decodeToken(token) : null;
@@ -46,10 +48,12 @@ export class AuthService {
   login(credentials: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}login`, credentials).pipe(
       tap(response => {
-        this.commonSetting.setSessionItem(this.tokenKey, response.token)
+        this.commonSetting.setSessionItem(this.tokenKey, response.token);
         const user = this.decodeToken(response.token);
         this.commonSetting.setSessionItem(this.userKey, JSON.stringify(user))
         this.currentUserSubject.next(user);
+        this.WebSocketService.connect(user?.['userId']);
+        console.log('token',user?.['userId'])
       }),
       catchError(this.handleError)
     );
@@ -59,6 +63,9 @@ export class AuthService {
     this.commonSetting.removeSessionItem(this.tokenKey);
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
+    this.http.post(`${this.baseUrl}/logout`,'xyz').subscribe(()=> {
+      console.log("logout api is called");
+    })
   }
 
   // --- Token Methods ---

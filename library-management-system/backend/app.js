@@ -1,10 +1,16 @@
 const express = require("express");
 const cors = require('cors');
+const http = require('http');
+const WebSocket = require('ws');
+const setupssoAlert = require('./redis/ssoAlertRedis');
 const {connMongoose} = require("./conn");
 const userAuth = require("./route/user");
 const userBooks = require("./route/books");
 
-app = express();
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+setupssoAlert(wss)
 app.use(express.json());
 
 
@@ -24,12 +30,12 @@ async function startServer(){
     try{
 
         const PORT = 8000;
-        const url = "mongodb://localhost:27017/library"
-        await connMongoose(url).then(()=>console.log("Mongodb is conected.."))
-        app.listen(PORT,()=>console.log("server is started"))
+        const url = "mongodb://localhost:27017/library";
+        await connMongoose(url).then(()=>console.log("Mongodb is conected.."));
+        server.listen(PORT,()=>console.log("server is started"));
 
     }catch (error){
-        console.log(error, "error in server")                                                                                                                                                           
+        console.log(error, "error in server")   ;                                                                                                                                                        
     }
 }
 
