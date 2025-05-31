@@ -28,9 +28,21 @@ const getCache = async (key) => {
       console.error("Redis DEL Error:", err);
     }
   };
+
+
+  // Publisher module in js
+  const publisher = async (channel, data) => {
+    try {
+      await redis.publish(channel, JSON.stringify(data));
+    } catch (error) {
+      console.error("Redis publish error:", error);
+    }
+  }
+  
   
   module.exports = {
     getCache,
     setCache,
-    delCache
+    delCache,
+    publisher
   };

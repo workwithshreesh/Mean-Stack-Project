@@ -1,7 +1,7 @@
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { getCache, setCache, delCache } = require("../middlewares/cacheHelpers");
+const { setCache, delCache, publisher } = require("../middlewares/cacheHelpers");
 
 
 const HandleRegister = async (req,res) =>{
@@ -96,6 +96,9 @@ const HandleLogin = async (req,res) => {
 
         // redis setup for login
         await setCache(`session:${user._id}`, token);
+
+        // Publish sso client
+        await publisher("sso_channel",{ userId: user._id.toString() })
 
         return res.status(200).json({message:"User Login Successfully",token:token});
 

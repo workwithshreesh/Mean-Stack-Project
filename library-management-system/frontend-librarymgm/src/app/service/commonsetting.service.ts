@@ -102,4 +102,14 @@ export class CommonsettingService {
     });
   }
 
+  questionOk(message:string, title: string = 'Are you sure?') {
+    return Swal.fire({
+      title,
+      text: message,
+      icon: 'question',
+      showCancelButton: false,
+      confirmButtonText: 'OK'
+    });
+  }
+
 }

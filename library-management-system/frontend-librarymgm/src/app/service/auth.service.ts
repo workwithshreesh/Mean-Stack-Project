@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { forwardRef, Inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -28,7 +28,7 @@ export class AuthService {
     private http: HttpClient,
     private router: Router,
     private commonSetting: CommonsettingService,
-    private WebSocketService: WebSocketService
+   private WebSocketService: WebSocketService
   ) {
     const token = this.commonSetting.getSessionItem(this.tokenKey);
     const user = token ? this.decodeToken(token) : null;
@@ -52,7 +52,7 @@ export class AuthService {
         const user = this.decodeToken(response.token);
         this.commonSetting.setSessionItem(this.userKey, JSON.stringify(user))
         this.currentUserSubject.next(user);
-        this.WebSocketService.connect(user?.['userId']);
+        this.WebSocketService.connect(response.token);
         console.log('token',user?.['userId'])
       }),
       catchError(this.handleError)
@@ -63,7 +63,7 @@ export class AuthService {
     this.commonSetting.removeSessionItem(this.tokenKey);
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
-    this.http.post(`${this.baseUrl}/logout`,'xyz').subscribe(()=> {
+    this.http.post(`${this.baseUrl}logout`,'xyz').subscribe(()=> {
       console.log("logout api is called");
     })
   }

@@ -1,37 +1,53 @@
 const redisClient = require('./redisClient');
-
-const redisSubscriber = redisClient.duplicate();
-
-redisSubscriber.on('connect', () => console.log('Redis subscriber connected'));
-redisSubscriber.on('error', (err) => console.log(`Redis subscriber error`,err));
+const url = require('url');
+const WebSocket = require('ws');
+const jwt = require("jsonwebtoken");
 
 
-function setupAlert(wss) {
-    redisSubscriber.subscribe('sso-channel', (err, count) => {
-        if(err){
-            console.error('Failed to subscribe', err);
-            return;
+module.exports = function setupssoAlert(wss) {
+    
+    const subscriber = redisClient.duplicate();
+    subscriber.subscribe("sso_channel", (err, count) => {
+        if (err) {
+            console.error("Redis subscribe error", err);
+        } else {
+            console.log("Redis subscriber connected");
         }
-        console.log(`Subscribe to ${count} channel(s)`);
     });
 
-    redisSubscriber.on('message', (channel, message) => {
-        if(channel === 'sso-channel'){
-            const data = JSON.parse(message);
-            console.log('Recived sso alert',data);
-            console.log(client)
+    subscriber.on("message", (channel, message) => {
+        if (channel === "sso_channel") {
+            const { userId } = JSON.parse(message);
+            console.log("[REDIS] Alert for userId:", userId);
 
-            wss.clients.forEach(client => {
-                if(client.readyState === 1 && client.userId == data.userId) {
-                    console.log(`client: ${client}`, `data: ${data}`)
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN && client.userId === userId) {
                     client.send(JSON.stringify({
-                        type:'SSO_Alert',
-                        message: 'You have logged in from another device!'
+                        type: "SSO_Alert",
+                        message: "You have been logged out due to login from another device."
                     }));
                 }
             });
         }
     });
-}
 
-module.exports = setupAlert;
+    wss.on("connection", (ws, req) => {
+        const params = url.parse(req.url, true).query;
+        const token = params.token;
+
+        if (!token) {
+            console.log("No token provided in WebSocket connection");
+            ws.close();
+            return;
+        }
+
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || "librarymgm");
+            ws.userId = decoded.userId;
+            console.log("[WS] Connected with userId:", ws.userId);
+        } catch (e) {
+            console.log("Invalid token in WebSocket:", e.message);
+            ws.close();
+        }
+    });
+}
