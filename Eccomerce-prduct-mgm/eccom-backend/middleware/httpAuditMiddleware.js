@@ -3,7 +3,6 @@ const socLogger = require("../socLogger");
 module.exports = async (req, res, next) => {
   const ip = req.ip || req.connection.remoteAddress;
   const time = new Date().toUTCString();
-
   // AUTH FAIL / LOGIN
   if (req.path.includes("login") && req.method === "POST") {
     await socLogger.info(

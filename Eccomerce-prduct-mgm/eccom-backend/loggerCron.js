@@ -1,32 +1,51 @@
 const cron = require("node-cron");
 const axios = require("axios");
-const SocLog = require("../models/socLogger");
+const SocLog = require("./models/socLogger");
 
-cron.schedule("*/1 * * * *", async () => {
-  try {
-    const logs = await SocLog.find().limit(100);
+let cronStarted = false;
 
-    if (!logs.length) return;
+function startCron() {
+  if (cronStarted) return;
+  cronStarted = true;
 
-    // SOC FORMAT → LIST OF STRINGS
-    const payload = {
-      logs: logs.map(l => l.message)
-    };
+  cron.schedule("*/5 * * * *", async () => {
+    try {
+      // Fetch oldest logs first
+      const logs = await SocLog.find()
+        .sort({ createdAt: 1 })
+        .limit(100);
 
-    const response = await axios.post(
-      "http://localhost:8000/api/example",
-      payload,
-      { timeout: 10000 }
-    );
+      if (!logs.length) return;
 
-   
-    if (response.status === 200) {
-      const ids = logs.map(l => l._id);
-      await SocLog.deleteMany({ _id: { $in: ids } });
-      console.log(`Sent & deleted ${ids.length} SOC logs`);
+      const payload = {
+        logs: logs.map(l => l.message)
+      };
+
+      console.log("Sending SOC logs:", payload.logs.length);
+
+      const response = await axios.post(
+        "https://nonheuristic-unconsentaneously-mi.ngrok-free.dev/collect-logs",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        const ids = logs.map(l => l._id);
+        await SocLog.deleteMany({ _id: { $in: ids } });
+
+        console.log(`Sent & deleted ${ids.length} SOC logs`);
+      }
+
+    } catch (err) {
+      console.error("SOC LOG PUSH FAILED:", err.message);
     }
+  });
 
-  } catch (err) {
-    console.error("SOC LOG PUSH FAILED:", err.message);
-  }
-});
+  console.log("SOC log cron scheduled (every 1 min)");
+}
+
+module.exports = startCron;
