@@ -13,8 +13,7 @@ const cors = require("cors");
 const app = express();
 
 // Allow origin
-app.use(cors('*'));
-
+app.use(cors({ origin: '*' }));
 // Parse JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -46,7 +45,7 @@ app.use(require("./middleware/httpAuditMiddleware"));
     startCron();
     console.log("Cron started");
 
-    app.listen(3000, '0.0.0.0', () => {
+    app.listen(3000, () => {
       console.log('Server running on http://localhost:3000');
     });
 
