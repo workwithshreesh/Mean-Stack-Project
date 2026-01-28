@@ -57,15 +57,7 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "host": "0.0.0.0",
-            "allowedHosts": [
-    ".ngrok-free.app",
-    ".ngrok-free.dev",
-    ".ngrok.io",
-    "large-pears-decide.loca.lt",
-    "twins-physiology-chemicals-variables.trycloudflare.com",
-    "messenger-burning-sage-hits.trycloudflare.com"
-  ],
-            "port": 4200,
+            "port": 4300,
             "disableHostCheck": true
           },
           "configurations": {

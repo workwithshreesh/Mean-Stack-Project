@@ -8,7 +8,7 @@ function startCron() {
   if (cronStarted) return;
   cronStarted = true;
 
-  cron.schedule("*/5 * * * *", async () => {
+  cron.schedule("*/1 * * * *", async () => {
     try {
       // Fetch oldest logs first
       const logs = await SocLog.find()
@@ -24,7 +24,7 @@ function startCron() {
       console.log("Sending SOC logs:", payload.logs.length);
 
       const response = await axios.post(
-        "https://nonheuristic-unconsentaneously-mi.ngrok-free.dev/collect-logs",
+        "http://10.125.167.226:3000/api/collect-logs",
         payload,
         {
           headers: {

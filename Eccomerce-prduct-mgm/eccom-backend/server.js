@@ -9,15 +9,18 @@ const artifact = require('./routes/artifact');
 const startCron = require('./loggerCron');
 const path = require('path');
 const cors = require("cors");
+const httpMidleware = require("./middleware/httpAuditMiddleware")
 
 const app = express();
 
 // Allow origin
-app.use(cors({ origin: '*' }));
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 // Parse JSON
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
+// HTTP audit middleware (after routes OR before — both ok)
+app.use(httpMidleware);
 
 // Serve static images
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -30,7 +33,7 @@ app.use('/api/report', reportRoute);
 app.use('/api/artifact', artifact);
 
 // HTTP audit middleware (after routes OR before — both ok)
-app.use(require("./middleware/httpAuditMiddleware"));
+app.use(httpMidleware);
 
 /* START SERVER ONLY AFTER DBs ARE READY */
 (async () => {
@@ -45,8 +48,8 @@ app.use(require("./middleware/httpAuditMiddleware"));
     startCron();
     console.log("Cron started");
 
-    app.listen(3000, () => {
-      console.log('Server running on http://localhost:3000');
+    app.listen(4000,'0.0.0.0', () => {
+      console.log('Server running on http://localhost:4000');
     });
 
   } catch (err) {
